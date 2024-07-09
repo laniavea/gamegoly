@@ -1,0 +1,77 @@
+import { FieldTile, FieldData } from "./FieldTile.slint";
+
+export component AppWindow inherits Window {
+	preferred-width: 1920px;
+	preferred-height: 1080px;
+
+	in property <[FieldData]> field_top;
+	in property <[FieldData]> field_right;
+	in property <[FieldData]> field_left;
+	in property <[FieldData]> field_bottom;
+
+	property <int> tiles-count: root.field_left.length;
+
+	property <length> tiles-size: min(root.width, root.height) / tiles-count;
+	property <length> tiles-size-height: root.height / tiles-count;
+	property <length> tiles-size-width: root.width / tiles-count;
+
+	HorizontalLayout {
+		alignment: center;
+		VerticalLayout {
+			for filed_data in field_left: FieldTile {
+				min-width: tiles-size-width;
+				min-height: tiles-size;
+				FieldTile {
+					field_data: filed-data;
+				}
+			}
+		}
+
+		VerticalLayout {
+			min-width: root.width / 2;
+			alignment: space-between;
+			HorizontalLayout{
+				for filed_data in field_top: FieldTile {
+					FieldTile {
+						min-width: tiles-size;
+						min-height: tiles-size-height;
+						field_data: filed-data;
+					}
+				}
+			}
+			HorizontalLayout{
+
+			}
+			HorizontalLayout{
+				for filed_data in field_bottom: FieldTile {
+					FieldTile {
+						min-width: tiles-size;
+						min-height: tiles-size-height;
+						field_data: filed-data;
+					}
+				}
+			}
+		}
+
+		VerticalLayout {
+			for filed_data in field_right: FieldTile {
+				FieldTile {
+					min-width: tiles-size-width;
+					min-height: tiles-size;
+					field_data: filed-data;
+				}
+			}
+		}
+	}
+
+	/*
+	Rectangle {
+		x: 100px;
+		y: 100px;
+		width: parent.width / 10;
+		height: parent.width / 10;
+		background: red;
+		border-radius: self.width / 2;
+	}
+	*/
+}

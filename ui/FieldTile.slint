@@ -1,0 +1,24 @@
+export struct FieldData {
+	title: string,
+	description: string,
+	rules: [string],
+	condition_id: int,
+	fill_color: color,
+}
+
+export component FieldTile inherits Rectangle {
+	in-out property <FieldData> field_data;
+
+	preferred-width: 64px;
+	preferred-height: 64px;
+
+	border-width: 1px;
+	border-color: black;
+
+	background: field_data.fill-color;
+
+	Text {
+		text: parent.field_data.title;
+		overflow: elide;
+	}
+}
