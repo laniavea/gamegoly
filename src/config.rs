@@ -14,7 +14,13 @@ struct SerdeFieldData {
 }
 
 #[derive(Debug, Clone, DeJson)]
+struct SerdeMainInfoData {
+    title: String,
+}
+
+#[derive(Debug, Clone, DeJson)]
 struct SerdeGameGolyData {
+    main_info: SerdeMainInfoData,
     field: Vec<SerdeFieldData>,
 }
 
@@ -62,6 +68,10 @@ impl SerdeGameGolyData {
             left_part,
         )
     }
+
+    fn main_info_to_slint(&mut self) -> slint::SharedString {
+        slint::SharedString::from(self.main_info.title.clone())
+    }
 }
 
 pub struct GameGolyDataSlint {
@@ -69,6 +79,8 @@ pub struct GameGolyDataSlint {
     field_left: slint::ModelRc<FieldData>,
     field_right: slint::ModelRc<FieldData>,
     field_bottom: slint::ModelRc<FieldData>,
+
+    main_info_title: slint::SharedString,
 }
 
 impl GameGolyDataSlint {
@@ -79,11 +91,18 @@ impl GameGolyDataSlint {
     pub fn field_left(&self) -> slint::ModelRc<FieldData> {
         self.field_left.clone()
     }
+
     pub fn field_right(&self) -> slint::ModelRc<FieldData> {
         self.field_right.clone()
     }
+
     pub fn field_bottom(&self) -> slint::ModelRc<FieldData> {
         self.field_bottom.clone()
+    }
+    
+    pub fn main_info_title(&self) -> slint::SharedString {
+        self.main_info_title.clone()
+
     }
 }
 
@@ -91,17 +110,20 @@ pub fn read_config(file_path: &str) -> Result<GameGolyDataSlint, Box<dyn std::er
     let config_text = fs::read_to_string(file_path)?;
     let mut gamegoly_data: SerdeGameGolyData = DeJson::deserialize_json(&config_text)?;
 
-    let (field_sliant_bottom,
-        field_sliant_right,
-        field_sliant_top,
-        field_sliant_left
+    let (field_slint_bottom,
+        field_slint_right,
+        field_slint_top,
+        field_slint_left
     ) = gamegoly_data.field_to_slint();
 
+    let main_info_title = gamegoly_data.main_info_to_slint();
+
     let gamegoly_data_slint = GameGolyDataSlint {
-        field_top: field_sliant_top,
-        field_left: field_sliant_left,
-        field_right: field_sliant_right,
-        field_bottom: field_sliant_bottom,
+        field_top: field_slint_top,
+        field_left: field_slint_left,
+        field_right: field_slint_right,
+        field_bottom: field_slint_bottom,
+        main_info_title,
     };
 
     Ok(gamegoly_data_slint)

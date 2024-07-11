@@ -9,11 +9,14 @@ export component AppWindow inherits Window {
 	in property <[FieldData]> field_left;
 	in property <[FieldData]> field_bottom;
 
-	property <int> tiles-count: root.field_left.length;
+	in property <string> main_info_title;
 
-	property <length> tiles-size: min(root.width, root.height) / tiles-count;
+	property <int> tiles-count: field_left.length;
+
+	property <length> minimal_side: min(root.height, root.width);
 	property <length> tiles-size-height: root.height / tiles-count;
 	property <length> tiles-size-width: root.width / tiles-count;
+	property <length> tiles-size: min(tiles-size-width, tiles-size-height);
 
 	HorizontalLayout {
 		alignment: center;
@@ -40,7 +43,13 @@ export component AppWindow inherits Window {
 				}
 			}
 			HorizontalLayout{
-
+				Text {
+					text: main_info_title;
+					vertical-alignment: center;
+					horizontal-alignment: center;
+					font-weight: 500;
+					font-size: minimal_side / 15;
+				}
 			}
 			HorizontalLayout{
 				for filed_data in field_bottom: FieldTile {
