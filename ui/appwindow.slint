@@ -13,18 +13,26 @@ export component AppWindow inherits Window {
 
 	property <int> tiles-count: field_left.length;
 
+	in property <int> player_location_id;
+
 	property <length> minimal_side: min(root.height, root.width);
 	property <length> tiles-size-height: root.height / tiles-count;
 	property <length> tiles-size-width: root.width / tiles-count;
 	property <length> tiles-size: min(tiles-size-width, tiles-size-height);
 
+	property <length> player_size: tiles-size / 2;
+	property <length> player_x: 100px;
+	property <length> player_y: 100px;
+
+
+	// Field and space inside field
 	HorizontalLayout {
 		alignment: center;
 		VerticalLayout {
 			for filed_data in field_left: FieldTile {
-				min-width: tiles-size-width;
-				min-height: tiles-size;
 				FieldTile {
+					min-width: tiles-size-width;
+					min-height: tiles-size;
 					field_data: filed-data;
 				}
 			}
@@ -73,14 +81,15 @@ export component AppWindow inherits Window {
 		}
 	}
 
-	/*
+	// Player
 	Rectangle {
-		x: 100px;
-		y: 100px;
-		width: parent.width / 10;
-		height: parent.width / 10;
-		background: red;
+		x: player_x;
+		y: player_y;
+		width: player_size;
+		height: player-size;
+		background: green;
+		border-width: 1px;
+		border-color: black;
 		border-radius: self.width / 2;
 	}
-	*/
 }

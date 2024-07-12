@@ -19,6 +19,9 @@ export component FieldTile inherits Rectangle {
 
 	Text {
 		text: parent.field_data.title;
+		width: 100%;
+		horizontal-alignment: center;
+		wrap: word-wrap;
 		overflow: elide;
 	}
 }
