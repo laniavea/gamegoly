@@ -14,10 +14,16 @@ fn main() -> Result<(), slint::PlatformError> {
     main_window.set_field_right(field_data.field_right());
     main_window.set_field_left(field_data.field_left());
     main_window.set_field_bottom(field_data.field_bottom());
+    main_window.set_number_of_tiles(field_data.field_number_of_elems());
 
     main_window.set_main_info_title(field_data.main_info_title());
 
     main_window.set_player_location_id(player_data.location());
+
+    let (ver_state, hor_state) = utils::get_ver_hor_state(player_data.location(), field_data.field_number_of_elems());
+
+    main_window.set_player_on_ver(ver_state);
+    main_window.set_player_on_hor(hor_state);
 
     main_window.run()
 }

@@ -4,31 +4,36 @@ export component AppWindow inherits Window {
 	preferred-width: 1920px;
 	preferred-height: 1080px;
 
+	// Field vars
+	property <int> tiles-count: field_left.length;
 	in property <[FieldData]> field_top;
 	in property <[FieldData]> field_right;
 	in property <[FieldData]> field_left;
 	in property <[FieldData]> field_bottom;
-
-	in property <string> main_info_title;
-
-	property <int> tiles-count: field_left.length;
-
-	in property <int> player_location_id;
+	in property <int> number_of_tiles;
 
 	property <length> minimal_side: min(root.height, root.width);
 	property <length> tiles-size-height: root.height / tiles-count;
 	property <length> tiles-size-width: root.width / tiles-count;
 	property <length> tiles-size: min(tiles-size-width, tiles-size-height);
 
+	// Decor vars
+	in property <string> main_info_title;
+
+	// Player vars
+	in property <int> player_location_id;
 	property <length> player_size: tiles-size / 2;
-	property <length> player_x: 100px;
-	property <length> player_y: 100px;
+	in property <bool> player_on_hor;
+	in property <bool> player_on_ver;
+
+	property <length> player_x: calc_player_x(root.width);
+	property <length> player_y: calc_player_y(root.height);
 
 
 	// Field and space inside field
-	HorizontalLayout {
+	field_layout := HorizontalLayout {
 		alignment: center;
-		VerticalLayout {
+		left_field_layout := VerticalLayout {
 			for filed_data in field_left: FieldTile {
 				FieldTile {
 					min-width: tiles-size-width;
@@ -38,7 +43,7 @@ export component AppWindow inherits Window {
 			}
 		}
 
-		VerticalLayout {
+		center_field_layout := VerticalLayout {
 			min-width: root.width / 2;
 			alignment: space-between;
 			HorizontalLayout{
@@ -70,7 +75,7 @@ export component AppWindow inherits Window {
 			}
 		}
 
-		VerticalLayout {
+		right_field_layout := VerticalLayout {
 			for filed_data in field_right: FieldTile {
 				FieldTile {
 					min-width: tiles-size-width;
@@ -92,4 +97,19 @@ export component AppWindow inherits Window {
 		border-color: black;
 		border-radius: self.width / 2;
 	}
+
+	public pure function calc_player_x(window_wight: length) -> length {
+		if player_on_ver {
+			if root.player_location_id <= root.number_of_tiles / 2 {
+				return center-field-layout.x - tiles-size-width / 2;
+			}
+			return center-field-layout.x + center-field-layout.width + tiles-size-width / 2;
+		}
+		return window_wight / 5;
+	}
+
+	public pure function calc_player_y(window_height: length) -> length {
+		return window_height / 5;
+	}
 }
+

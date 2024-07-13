@@ -29,8 +29,9 @@ impl SerdeGameGolyData {
         slint::ModelRc<FieldData>,
         slint::ModelRc<FieldData>,
         slint::ModelRc<FieldData>,
-        slint::ModelRc<FieldData>)
-    {
+        slint::ModelRc<FieldData>,
+        i32
+        ) {
         let mut slint_field: Vec<FieldData> = Vec::with_capacity(self.field.len());
 
         for now_field in self.field.drain(..) {
@@ -46,7 +47,9 @@ impl SerdeGameGolyData {
             });
         }
 
-        let (u_l, u_r, b_r) = utils::get_corners(slint_field.len());
+        let number_of_tiles: i32 = slint_field.len() as i32;
+
+        let (u_l, u_r, b_r) = utils::get_corners(number_of_tiles as usize);
 
         let bottom_part = slint::ModelRc::new(
             slint::VecModel::from(slint_field.drain(b_r+1..).rev().collect::<Vec<FieldData>>()));
@@ -54,7 +57,6 @@ impl SerdeGameGolyData {
         let right_part = slint::ModelRc::new(
             slint::VecModel::from(slint_field.drain(u_r..).collect::<Vec<FieldData>>()));
 
-        //FIX: Why is +2, i don't get it
         let top_part = slint::ModelRc::new(
             slint::VecModel::from(slint_field.drain(u_l+1..).collect::<Vec<FieldData>>()));
 
@@ -66,6 +68,7 @@ impl SerdeGameGolyData {
             right_part,
             top_part,
             left_part,
+            number_of_tiles,
         )
     }
 
@@ -75,15 +78,19 @@ impl SerdeGameGolyData {
 }
 
 pub struct GameGolyDataSlint {
+    field_number_of_elems: i32,
     field_top: slint::ModelRc<FieldData>,
     field_left: slint::ModelRc<FieldData>,
     field_right: slint::ModelRc<FieldData>,
     field_bottom: slint::ModelRc<FieldData>,
-
     main_info_title: slint::SharedString,
 }
 
 impl GameGolyDataSlint {
+    pub fn field_number_of_elems(&self) -> i32 {
+        self.field_number_of_elems
+    }
+
     pub fn field_top(&self) -> slint::ModelRc<FieldData> {
         self.field_top.clone()
     }
@@ -113,12 +120,14 @@ pub fn read_config(file_path: &str) -> Result<GameGolyDataSlint, Box<dyn std::er
     let (field_slint_bottom,
         field_slint_right,
         field_slint_top,
-        field_slint_left
+        field_slint_left,
+        number_of_tiles
     ) = gamegoly_data.field_to_slint();
 
     let main_info_title = gamegoly_data.main_info_to_slint();
 
     let gamegoly_data_slint = GameGolyDataSlint {
+        field_number_of_elems: number_of_tiles,
         field_top: field_slint_top,
         field_left: field_slint_left,
         field_right: field_slint_right,
