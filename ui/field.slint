@@ -1,0 +1,130 @@
+import { FieldTile, FieldData } from "./field_tile.slint";
+
+export global FieldAdapter {
+	in-out property <[FieldData]> field_top;
+	in-out property <[FieldData]> field_right;
+	in-out property <[FieldData]> field_left;
+	in-out property <[FieldData]> field_bottom;
+
+	out property <int> tiles_count_by_side: field_left.length;
+	in-out property <int> number_of_tiles;
+
+	// Decor vars
+	in-out property <string> main_info_title;
+
+	// Player vars
+	in-out property <int> player_loc_id;
+	in-out property <bool> player_on_hor;
+	in-out property <bool> player_on_ver;
+}
+
+export component Field inherits Rectangle {
+	preferred-width: 1280px;
+	preferred-height: 720px;
+
+	property <length> minimal_side: min(root.height, root.width);
+	property <length> tiles-size-height: root.height / FieldAdapter.tiles-count_by_side;
+	property <length> tiles-size-width: root.width / FieldAdapter.tiles-count_by_side;
+	property <length> tiles-size: min(tiles-size-width, tiles-size-height);
+
+	property <length> player_size: tiles-size / 2;
+
+	out property <length> player_x: calc_player_x(root.width);
+	out property <length> player_y: calc_player_y(root.height);
+	// Field and space inside field
+	field_layout := HorizontalLayout {
+		alignment: center;
+		left_field_layout := VerticalLayout {
+			for filed_data in FieldAdapter.field_left: FieldTile {
+				FieldTile {
+					min-width: tiles-size-width;
+					min-height: tiles-size;
+					field_data: filed-data;
+				}
+			}
+		}
+
+		center_field_layout := VerticalLayout {
+			min-width: root.width / 2;
+			alignment: space-between;
+			HorizontalLayout{
+				for filed_data in FieldAdapter.field_top: FieldTile {
+					FieldTile {
+						min-width: tiles-size-width;
+						min-height: tiles-size-height;
+						field_data: filed-data;
+					}
+				}
+			}
+			HorizontalLayout{
+				Text {
+					text: FieldAdapter.main_info_title;
+					vertical-alignment: center;
+					horizontal-alignment: center;
+					font-weight: 500;
+					font-size: minimal_side / 15;
+				}
+			}
+			HorizontalLayout{
+				for filed_data in FieldAdapter.field_bottom: FieldTile {
+					FieldTile {
+						min-width: tiles-size-width;
+						min-height: tiles-size-height;
+						field_data: filed-data;
+					}
+				}
+			}
+		}
+
+		right_field_layout := VerticalLayout {
+			for filed_data in FieldAdapter.field_right: FieldTile {
+				FieldTile {
+					min-width: tiles-size-width;
+					min-height: tiles-size;
+					field_data: filed-data;
+				}
+			}
+		}
+	}
+
+	// Player
+	Rectangle {
+		x: player_x;
+		y: player_y;
+		width: player_size;
+		height: player-size;
+		background: green;
+		border-width: 1px;
+		border-color: black;
+		border-radius: self.width / 2;
+	}
+
+	public pure function calc_player_x(window_wight: length) -> length {
+		if FieldAdapter.player_loc_id <= FieldAdapter.number_of_tiles / 2 {
+			if FieldAdapter.player_on_ver {
+				return center-field-layout.x - tiles-size-width / 2;
+			}
+			return center-field-layout.x + (mod(FieldAdapter.player_loc_id, FieldAdapter.tiles_count_by_side) * tiles-size-width) + tiles-size-width / 2;
+		} else {
+			if FieldAdapter.player_on_ver {
+				return center-field-layout.x + (mod(FieldAdapter.player_loc_id, FieldAdapter.tiles_count_by_side) * tiles-size) + tiles-size / 2;
+			}
+			return center-field-layout.x + center-field-layout.width - (mod(FieldAdapter.player_loc_id, FieldAdapter.tiles_count_by_side) * tiles-size) - tiles-size / 2;
+		}
+	}
+
+	public pure function calc_player_y(window_height: length) -> length {
+		if FieldAdapter.player_loc_id <= FieldAdapter.number_of_tiles / 2 && FieldAdapter.player_loc_id != 0 {
+			if FieldAdapter.player_on_hor {
+				return center-field-layout.y + tiles-size-height / 2;
+			}
+			return left-field-layout.y + left-field-layout.height - (mod(FieldAdapter.player_loc_id, FieldAdapter.tiles_count_by_side) * tiles-size-height) - tiles-size-height / 2;
+		} else {
+			if FieldAdapter.player_on_hor {
+				return center-field-layout.y + center-field-layout.height - tiles-size-height / 2;
+			}
+			return left-field-layout.y + (mod(FieldAdapter.player_loc_id, FieldAdapter.tiles_count_by_side) * tiles-size) + tiles-size / 2;
+		}
+	}
+
+}
