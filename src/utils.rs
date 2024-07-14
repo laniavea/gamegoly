@@ -13,7 +13,7 @@ pub fn get_ver_hor_state(player_id: i32, number_of_elems: i32) -> (bool, bool) {
     ver_state = ver_state || player_id <= elems_in_row;
 
     let mut hor_state = player_id >= elems_in_row && player_id <= elems_in_row * 2;
-    hor_state = hor_state || player_id >= elems_in_row * 3;
+    hor_state = hor_state || player_id >= elems_in_row * 3 || player_id == 0;
 
     (ver_state, hor_state)
 }

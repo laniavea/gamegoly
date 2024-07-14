@@ -18,7 +18,7 @@ fn main() -> Result<(), slint::PlatformError> {
 
     main_window.set_main_info_title(field_data.main_info_title());
 
-    main_window.set_player_location_id(player_data.location());
+    main_window.set_player_loc_id(player_data.location());
 
     let (ver_state, hor_state) = utils::get_ver_hor_state(player_data.location(), field_data.field_number_of_elems());
 

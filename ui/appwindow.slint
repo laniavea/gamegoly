@@ -1,3 +1,5 @@
+import { VerticalBox, Button } from "std-widgets.slint";
+
 import { FieldTile, FieldData } from "./FieldTile.slint";
 
 export component AppWindow inherits Window {
@@ -5,7 +7,7 @@ export component AppWindow inherits Window {
 	preferred-height: 1080px;
 
 	// Field vars
-	property <int> tiles-count: field_left.length;
+	property <int> tiles_count_by_side: field_left.length;
 	in property <[FieldData]> field_top;
 	in property <[FieldData]> field_right;
 	in property <[FieldData]> field_left;
@@ -13,21 +15,21 @@ export component AppWindow inherits Window {
 	in property <int> number_of_tiles;
 
 	property <length> minimal_side: min(root.height, root.width);
-	property <length> tiles-size-height: root.height / tiles-count;
-	property <length> tiles-size-width: root.width / tiles-count;
+	property <length> tiles-size-height: root.height / tiles-count_by_side;
+	property <length> tiles-size-width: root.width / tiles-count_by_side;
 	property <length> tiles-size: min(tiles-size-width, tiles-size-height);
 
 	// Decor vars
 	in property <string> main_info_title;
 
 	// Player vars
-	in property <int> player_location_id;
+	in-out property <int> player_loc_id;
 	property <length> player_size: tiles-size / 2;
 	in property <bool> player_on_hor;
 	in property <bool> player_on_ver;
 
-	property <length> player_x: calc_player_x(root.width);
-	property <length> player_y: calc_player_y(root.height);
+	out property <length> player_x: calc_player_x(root.width);
+	out property <length> player_y: calc_player_y(root.height);
 
 
 	// Field and space inside field
@@ -49,7 +51,7 @@ export component AppWindow inherits Window {
 			HorizontalLayout{
 				for filed_data in field_top: FieldTile {
 					FieldTile {
-						min-width: tiles-size;
+						min-width: tiles-size-width;
 						min-height: tiles-size-height;
 						field_data: filed-data;
 					}
@@ -67,7 +69,7 @@ export component AppWindow inherits Window {
 			HorizontalLayout{
 				for filed_data in field_bottom: FieldTile {
 					FieldTile {
-						min-width: tiles-size;
+						min-width: tiles-size-width;
 						min-height: tiles-size-height;
 						field_data: filed-data;
 					}
@@ -99,17 +101,31 @@ export component AppWindow inherits Window {
 	}
 
 	public pure function calc_player_x(window_wight: length) -> length {
-		if player_on_ver {
-			if root.player_location_id <= root.number_of_tiles / 2 {
+		if player_loc_id <= number_of_tiles / 2 {
+			if player_on_ver {
 				return center-field-layout.x - tiles-size-width / 2;
 			}
-			return center-field-layout.x + center-field-layout.width + tiles-size-width / 2;
+			return center-field-layout.x + (mod(player_loc_id, tiles_count_by_side) * tiles-size-width) + tiles-size-width / 2;
+		} else {
+			if player_on_ver {
+				return center-field-layout.x + (mod(player_loc_id, tiles_count_by_side) * tiles-size) + tiles-size / 2;
+			}
+			return center-field-layout.x + center-field-layout.width - (mod(player_loc_id, tiles_count_by_side) * tiles-size) - tiles-size / 2;
 		}
-		return window_wight / 5;
 	}
 
 	public pure function calc_player_y(window_height: length) -> length {
-		return window_height / 5;
+		if player_loc_id <= number_of_tiles / 2 && player_loc_id != 0 {
+			if player_on_hor {
+				return center-field-layout.y + tiles-size-height / 2;
+			}
+			return left-field-layout.y + left-field-layout.height - (mod(player_loc_id, tiles_count_by_side) * tiles-size-height) - tiles-size-height / 2;
+		} else {
+			if player_on_hor {
+				return center-field-layout.y + center-field-layout.height - tiles-size-height / 2;
+			}
+			return left-field-layout.y + (mod(player_loc_id, tiles_count_by_side) * tiles-size) + tiles-size / 2;
+		}
 	}
 }
 
