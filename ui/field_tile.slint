@@ -15,6 +15,13 @@ export component FieldTile inherits Rectangle {
 	border-width: 1px;
 	border-color: black;
 
+	TouchArea {
+		clicked => {
+			additional_info.show();
+
+		}
+	}
+
 	background: field_data.fill-color;
 
 	Text {
@@ -23,5 +30,17 @@ export component FieldTile inherits Rectangle {
 		horizontal-alignment: center;
 		wrap: word-wrap;
 		overflow: elide;
+	}
+
+	additional_info := PopupWindow {
+		x: 0;
+		y: 0;
+
+		Rectangle {
+			background: white;
+			Text {
+				text: field_data.title;
+			}
+		}
 	}
 }

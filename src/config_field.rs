@@ -10,6 +10,7 @@ struct SerdeFieldData {
 	title: String,
 	description: String,
 	rules: Vec<String>,
+    color: String,
 	condition_id: i32,
 }
 
