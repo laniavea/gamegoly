@@ -1,3 +1,5 @@
+import { Button } from "std-widgets.slint";
+
 import { Field, FieldAdapter } from "./field.slint";
 
 export { FieldAdapter }
@@ -6,6 +8,29 @@ export component AppWindow inherits Window {
 	preferred-width: 1920px;
 	preferred-height: 1080px;
 
-	Field {}
-}
+	callback update_player_state(int);
 
+	HorizontalLayout {
+		VerticalLayout {
+			Field {
+				now_height: root.height * 0.9;
+				now_width: root.width;
+			}
+
+			Rectangle {
+				preferred-width: 100%;
+				height: root.height / 10;
+				background: red;
+
+				Button {
+					text: "Click me: " + FieldAdapter.player_loc_id;
+					clicked => {
+						FieldAdapter.player_loc_id += 1;
+						FieldAdapter.player_loc_id = mod(FieldAdapter.player_loc_id, FieldAdapter.number_of_tiles);
+						update_player_state(FieldAdapter.player_loc_id);
+					}
+				}
+			}
+		}
+	}
+}
