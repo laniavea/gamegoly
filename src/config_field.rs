@@ -12,6 +12,9 @@ struct SerdeFieldData {
 	rules: Vec<String>,
     color: String,
 	condition_id: i32,
+
+    #[nserde(default)]
+    fill_color: (u8, u8, u8)
 }
 
 #[derive(Debug, Clone, DeJson)]
@@ -23,6 +26,46 @@ struct SerdeMainInfoData {
 struct SerdeGameGolyData {
     main_info: SerdeMainInfoData,
     field: Vec<SerdeFieldData>,
+}
+
+#[derive(Debug, Clone)]
+pub enum GameGolyConfigError {
+    ColorOverflow,
+}
+
+impl std::fmt::Display for GameGolyConfigError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            GameGolyConfigError::ColorOverflow => write!(f, "Color contains more than three elements"),
+        }
+    }
+}
+
+impl std::error::Error for GameGolyConfigError {}
+
+impl SerdeGameGolyData {
+    fn config_validation(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        SerdeGameGolyData::validate_field(&mut self.field)?;
+        Ok(())
+    }
+
+    fn validate_field(field: &mut Vec<SerdeFieldData>) -> Result<(), Box<dyn std::error::Error>> {
+        for tile in field {
+            let rgb = tile.color.split_whitespace();
+
+            let mut temp_color = [0u8; 3];
+
+            for (color_id, color_value) in rgb.into_iter().enumerate() {
+                if color_id == 3 {
+                    return Err(Box::new(GameGolyConfigError::ColorOverflow))
+                }
+                temp_color[color_id] = color_value.parse()?;
+            }
+
+            tile.fill_color = temp_color.into();
+        }
+        Ok(())
+    }
 }
 
 impl SerdeGameGolyData {
@@ -38,13 +81,15 @@ impl SerdeGameGolyData {
         for now_field in self.field.drain(..) {
             let slint_rules: Vec<slint::SharedString> = now_field.rules.iter().map(slint::SharedString::from).collect();
 
+            let (color_r, color_g, color_b) = now_field.fill_color;
+
             slint_field.push(
                 FieldData{
                     title: slint::SharedString::from(now_field.title),
                     description: slint::SharedString::from(now_field.description),
                     rules: slint::ModelRc::new(slint::VecModel::from(slint_rules)),
                     condition_id: now_field.condition_id,
-                    fill_color: slint::Color::from_rgb_u8(127, 127, 127),
+                    fill_color: slint::Color::from_rgb_u8(color_r, color_g, color_b),
             });
         }
 
@@ -117,6 +162,8 @@ impl GameGolyDataSlint {
 pub fn read_config(file_path: &str) -> Result<GameGolyDataSlint, Box<dyn std::error::Error>>{
     let config_text = fs::read_to_string(file_path)?;
     let mut gamegoly_data: SerdeGameGolyData = DeJson::deserialize_json(&config_text)?;
+
+    gamegoly_data.config_validation()?;
 
     let (field_slint_bottom,
         field_slint_right,
