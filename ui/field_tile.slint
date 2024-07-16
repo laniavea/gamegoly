@@ -9,10 +9,13 @@ export struct FieldData {
 export component FieldTile inherits Rectangle {
 	in-out property <FieldData> field_data;
 
+	// TODO: Use this property or remove
+	in property <length> text_width;
+
 	preferred-width: 64px;
 	preferred-height: 64px;
 
-	border-width: 1px;
+	border-width: 2px;
 	border-color: black;
 
 	TouchArea {
@@ -25,9 +28,12 @@ export component FieldTile inherits Rectangle {
 	background: field_data.fill_color;
 
 	Text {
+		width: parent.width;
+		height: parent.height;
 		text: parent.field_data.title;
-		width: 100%;
 		horizontal-alignment: center;
+		vertical-alignment: center;
+		font-size: 20px;
 		wrap: word-wrap;
 		overflow: elide;
 	}
