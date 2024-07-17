@@ -28,6 +28,7 @@ export component Field inherits Rectangle {
 	property <length> center_layout_width: now_width / 2;
 
 	property <length> tiles_size: min(tiles_size_width, tiles_size_height);
+	property <length> text_size: max(tiles_size_width, tiles_size_height);
 
 	property <length> player_size: tiles_size / 2;
 
@@ -43,6 +44,7 @@ export component Field inherits Rectangle {
 					min-width: tiles_size_width;
 					min-height: tiles_size;
 					field_data: filed_data;
+					text_size: text_size;
 				}
 			}
 		}
@@ -56,6 +58,7 @@ export component Field inherits Rectangle {
 						min-width: tiles_size_width;
 						min-height: tiles_size_height;
 						field_data: filed_data;
+						text_size: text_size;
 					}
 				}
 			}
@@ -79,6 +82,7 @@ export component Field inherits Rectangle {
 						min-width: tiles_size_width;
 						min-height: tiles_size_height;
 						field_data: filed_data;
+						text_size: text_size;
 					}
 				}
 			}
@@ -90,6 +94,7 @@ export component Field inherits Rectangle {
 					min-width: tiles_size_width;
 					min-height: tiles_size;
 					field_data: filed_data;
+					text_size: text_size;
 				}
 			}
 		}

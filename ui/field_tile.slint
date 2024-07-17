@@ -9,8 +9,7 @@ export struct FieldData {
 export component FieldTile inherits Rectangle {
 	in-out property <FieldData> field_data;
 
-	// TODO: Use this property or remove
-	in property <length> text_width;
+	in property <length> text_size;
 
 	preferred-width: 64px;
 	preferred-height: 64px;
@@ -33,7 +32,9 @@ export component FieldTile inherits Rectangle {
 		text: parent.field_data.title;
 		horizontal-alignment: center;
 		vertical-alignment: center;
-		font-size: 20px;
+		font-size: text_size / 8;
+		font-weight: 600;
+		color: white;
 		wrap: word-wrap;
 		overflow: elide;
 	}
