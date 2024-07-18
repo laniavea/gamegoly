@@ -31,12 +31,14 @@ struct SerdeGameGolyData {
 #[derive(Debug, Clone)]
 pub enum GameGolyConfigError {
     ColorOverflow,
+    IncorrectNumberOfTiles,
 }
 
 impl std::fmt::Display for GameGolyConfigError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             GameGolyConfigError::ColorOverflow => write!(f, "Color contains more than three elements"),
+            GameGolyConfigError::IncorrectNumberOfTiles => write!(f, "Number of field tiles must be devided by 4 without reminder"),
         }
     }
 }
@@ -49,8 +51,8 @@ impl SerdeGameGolyData {
         Ok(())
     }
 
-    fn validate_field(field: &mut Vec<SerdeFieldData>) -> Result<(), Box<dyn std::error::Error>> {
-        for tile in field {
+    fn validate_field(field: &mut [SerdeFieldData]) -> Result<(), Box<dyn std::error::Error>> {
+        for tile in field.iter_mut() {
             let rgb = tile.color.split_whitespace();
 
             let mut temp_color = [0u8; 3];
@@ -64,6 +66,11 @@ impl SerdeGameGolyData {
 
             tile.fill_color = temp_color.into();
         }
+
+        if field.len() % 4 != 0 || field.is_empty() {
+            return Err(Box::new(GameGolyConfigError::IncorrectNumberOfTiles));
+        }
+
         Ok(())
     }
 }

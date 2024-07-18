@@ -40,14 +40,21 @@ export component FieldTile inherits Rectangle {
 	}
 
 	additional_info := PopupWindow {
-		x: 0;
-		y: 0;
-
 		Rectangle {
 			background: white;
+			width: 100%;
+			height: 100%;
+
 			Text {
+				padding: 100px;
 				text: field_data.title;
 			}
 		}
+
+		x: 0;
+		y: 0;
+		height: 2 * parent.height;
+		width: parent.width;
+
 	}
 }
