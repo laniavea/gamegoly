@@ -1,0 +1,22 @@
+import { FieldData } from "./field_data.slint";
+
+export global InfoPanelAdapter {
+	in-out property <bool> is_tile_panel;
+	in-out property <FieldData> tile_data;
+
+	in-out property <bool> is_test_panel;
+}
+
+export component InfoPanel inherits Rectangle {
+	
+	//TODO: Change it to smth like case and int values
+	if InfoPanelAdapter.is_tile_panel: 
+		Rectangle {
+			background: red;
+		}
+
+	if InfoPanelAdapter.is_test_panel: 
+		Rectangle {
+			background: black;
+		}
+}

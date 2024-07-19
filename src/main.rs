@@ -25,6 +25,8 @@ fn main() -> Result<(), slint::PlatformError> {
     main_window.global::<FieldAdapter>().set_player_on_ver(ver_state);
     main_window.global::<FieldAdapter>().set_player_on_hor(hor_state);
 
+    main_window.global::<InfoPanelAdapter>().set_is_test_panel(true);
+
     let main_window_weak = main_window.as_weak();
 
     main_window.on_update_player_state(move |player_loc| {

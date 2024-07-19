@@ -1,10 +1,5 @@
-export struct FieldData {
-	title: string,
-	description: string,
-	rules: [string],
-	condition_id: int,
-	fill_color: color,
-}
+import { FieldData } from "./field_data.slint";
+import { InfoPanelAdapter } from "./info_panel.slint";
 
 export component FieldTile inherits Rectangle {
 	in-out property <FieldData> field_data;
@@ -20,7 +15,8 @@ export component FieldTile inherits Rectangle {
 	TouchArea {
 		clicked => {
 			additional_info.show();
-
+			InfoPanelAdapter.is_tile_panel = true;
+			InfoPanelAdapter.is_test_panel = false;
 		}
 	}
 
@@ -51,10 +47,11 @@ export component FieldTile inherits Rectangle {
 			}
 		}
 
-		x: 0;
-		y: 0;
 		height: 2 * parent.height;
 		width: parent.width;
+
+		x: 0;
+		y: 0;
 
 	}
 }

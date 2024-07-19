@@ -1,4 +1,7 @@
-import { FieldTile, FieldData } from "./field_tile.slint";
+import { FieldTile } from "./field_tile.slint";
+import { FieldData } from "./field_data.slint";
+
+import { InfoPanel } from "./info_panel.slint";
 
 export global FieldAdapter {
 	in-out property <[FieldData]> field_top;
@@ -52,7 +55,7 @@ export component Field inherits Rectangle {
 		center_field_layout := VerticalLayout {
 			min-width: center_layout_width;
 			alignment: space-between;
-			HorizontalLayout{
+			HorizontalLayout {
 				for filed_data in FieldAdapter.field_top: FieldTile {
 					FieldTile {
 						min-width: tiles_size_width;
@@ -62,25 +65,44 @@ export component Field inherits Rectangle {
 					}
 				}
 			}
-			HorizontalLayout{
-				Rectangle {
-					preferred-height: now_height - 2 * tiles_size_height;
-					border-width: 2px;
-					border-color: black;
-					Text {
-						text: FieldAdapter.main_info_title;
-						vertical-alignment: center;
-						horizontal-alignment: center;
-						font-weight: 600;
-						font-size: minimal_side / 15;
+			HorizontalLayout {
+				VerticalLayout {
+					Rectangle {
+						preferred-width: tiles_size_width;
+						background: orange;
+					}
+				}
+				VerticalLayout {
+					Rectangle {
+						preferred-height: (now_height - 2 * tiles_size_height) / 2;
+						border-width: 2px;
+						border-color: black;
+						Text {
+							text: FieldAdapter.main_info_title;
+							vertical-alignment: center;
+							horizontal-alignment: center;
+							font-weight: 600;
+							font-size: minimal_side / 15;
+						}
+					}
+
+					InfoPanel {
+						preferred-height: (now_height - 2 * tiles_size_height) / 2;
+
+					}
+				}
+				VerticalLayout {
+					Rectangle {
+						preferred-width: tiles_size_width;
+						background: orange;
 					}
 				}
 			}
-			HorizontalLayout{
+			HorizontalLayout {
 				for filed_data in FieldAdapter.field_bottom: FieldTile {
 					FieldTile {
 						min-width: tiles_size_width;
-						min-height: tiles_size_height;
+						min-height: tiles_size;
 						field_data: filed_data;
 						text_size: text_size;
 					}
