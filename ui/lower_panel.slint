@@ -1,0 +1,20 @@
+import { Button } from "std-widgets.slint";
+
+import { FieldAdapter } from "./field.slint";
+
+export global LowerPanelAdapter {
+	callback update_player_state(int);
+}
+
+export component LowerPanel inherits Rectangle {
+	background: red;
+
+	Button {
+		text: "Click me: " + FieldAdapter.player_loc_id;
+		clicked => {
+			FieldAdapter.player_loc_id += 1;
+			FieldAdapter.player_loc_id = mod(FieldAdapter.player_loc_id, FieldAdapter.number_of_tiles);
+			LowerPanelAdapter.update_player_state(FieldAdapter.player_loc_id);
+		}
+	}
+}

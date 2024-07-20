@@ -1,15 +1,14 @@
-import { Button } from "std-widgets.slint";
-
 import { Field, FieldAdapter } from "./field.slint";
 import { InfoPanel, InfoPanelAdapter } from "./info_panel.slint";
+import { LowerPanel, LowerPanelAdapter } from "./lower_panel.slint";
 
-export { FieldAdapter, InfoPanelAdapter }
+export { FieldAdapter, InfoPanelAdapter, LowerPanelAdapter }
 
 export component AppWindow inherits Window {
 	preferred-width: 1920px;
 	preferred-height: 1080px;
 
-	callback update_player_state(int);
+	title: "GameGoly 2024";
 
 	HorizontalLayout {
 		VerticalLayout {
@@ -18,19 +17,8 @@ export component AppWindow inherits Window {
 				now_width: root.width;
 			}
 
-			Rectangle {
+			LowerPanel {
 				preferred-width: 100%;
-				height: root.height / 10;
-				background: red;
-
-				Button {
-					text: "Click me: " + FieldAdapter.player_loc_id;
-					clicked => {
-						FieldAdapter.player_loc_id += 1;
-						FieldAdapter.player_loc_id = mod(FieldAdapter.player_loc_id, FieldAdapter.number_of_tiles);
-						update_player_state(FieldAdapter.player_loc_id);
-					}
-				}
 			}
 		}
 	}

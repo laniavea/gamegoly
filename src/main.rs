@@ -29,7 +29,7 @@ fn main() -> Result<(), slint::PlatformError> {
 
     let main_window_weak = main_window.as_weak();
 
-    main_window.on_update_player_state(move |player_loc| {
+    main_window.global::<LowerPanelAdapter>().on_update_player_state(move |player_loc| {
         let main_window = main_window_weak.unwrap();
 
         let (ver_state, hor_state) = utils::get_ver_hor_state(player_loc, field_data.field_number_of_elems());
