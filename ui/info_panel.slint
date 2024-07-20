@@ -1,22 +1,61 @@
 import { FieldData } from "./field_data.slint";
 
 export global InfoPanelAdapter {
-	in-out property <bool> is_tile_panel;
-	in-out property <FieldData> tile_data;
+	in_out property <int> panel_mode;
 
-	in-out property <bool> is_test_panel;
+	in-out property <FieldData> tile_data;
 }
 
+//NOTE: I couldn't find smth simular to case which operates elements.
+// Only states to operate properties inside element and if else if during callback call
+
 export component InfoPanel inherits Rectangle {
-	
-	//TODO: Change it to smth like case and int values
-	if InfoPanelAdapter.is_tile_panel: 
+	in property <length> normal_text_size;
+
+	if InfoPanelAdapter.panel_mode == 1:
 		Rectangle {
-			background: red;
+			background: InfoPanelAdapter.tile_data.fill-color;
+
+			VerticalLayout {
+				Text {
+					text: InfoPanelAdapter.tile_data.title;
+					color: white;
+					horizontal-alignment: center;
+					vertical-alignment: center;
+					font-size: normal_text_size * 2.5;
+					font-weight: 600;
+					wrap: word-wrap;
+					overflow: elide;
+				}
+
+				Text {
+					text: InfoPanelAdapter.tile_data.description;
+					horizontal-alignment: center;
+					vertical-alignment: center;
+					font-size: normal_text_size;
+					wrap: word-wrap;
+					overflow: elide;
+				}
+
+				for rule in InfoPanelAdapter.tile_data.rules:
+					Text {
+						text: rule;
+						horizontal-alignment: center;
+						vertical-alignment: center;
+						font-size: normal_text_size;
+						wrap: word-wrap;
+						overflow: elide;
+					}
+			}
 		}
 
-	if InfoPanelAdapter.is_test_panel: 
+	//TODO: Remove test panel, change startup panel to tile where player now is.
+	if InfoPanelAdapter.panel_mode == 2:
 		Rectangle {
-			background: black;
+			background: white;
+			Text {
+				font-size: normal_text_size;
+				text: "Will be removed later";
+			}
 		}
 }

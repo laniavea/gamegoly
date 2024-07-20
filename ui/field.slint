@@ -1,7 +1,7 @@
 import { FieldTile } from "./field_tile.slint";
 import { FieldData } from "./field_data.slint";
 
-import { InfoPanel } from "./info_panel.slint";
+import { InfoPanel, InfoPanelAdapter } from "./info_panel.slint";
 
 export global FieldAdapter {
 	in-out property <[FieldData]> field_top;
@@ -31,7 +31,7 @@ export component Field inherits Rectangle {
 	property <length> center_layout_width: now_width / 2;
 
 	property <length> tiles_size: min(tiles_size_width, tiles_size_height);
-	property <length> text_size: max(tiles_size_width, tiles_size_height);
+	property <length> text_size: max(tiles_size_width, tiles_size_height) / 8;
 
 	property <length> player_size: tiles_size / 2;
 
@@ -87,6 +87,7 @@ export component Field inherits Rectangle {
 					}
 
 					InfoPanel {
+						normal_text_size: text_size;
 						preferred-height: (now_height - 2 * tiles_size_height) / 2;
 
 					}

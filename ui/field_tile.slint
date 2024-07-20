@@ -14,9 +14,8 @@ export component FieldTile inherits Rectangle {
 
 	TouchArea {
 		clicked => {
-			additional_info.show();
-			InfoPanelAdapter.is_tile_panel = true;
-			InfoPanelAdapter.is_test_panel = false;
+			InfoPanelAdapter.panel_mode = 1;
+			InfoPanelAdapter.tile_data = parent.field_data;
 		}
 	}
 
@@ -28,13 +27,15 @@ export component FieldTile inherits Rectangle {
 		text: parent.field_data.title;
 		horizontal-alignment: center;
 		vertical-alignment: center;
-		font-size: text_size / 8;
+		font-size: text_size;
 		font-weight: 600;
 		color: white;
 		wrap: word-wrap;
 		overflow: elide;
 	}
 
+	//NOTE: since slint doesn't support dynamic position of PopUpWindow based on self size,
+	// this code can be removed
 	additional_info := PopupWindow {
 		Rectangle {
 			background: white;
