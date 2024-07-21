@@ -130,7 +130,7 @@ impl SerdeGameGolyData {
     }
 }
 
-pub struct GameGolyDataSlint {
+pub struct FieldDataSlint {
     field_number_of_elems: i32,
     field_top: slint::ModelRc<FieldData>,
     field_left: slint::ModelRc<FieldData>,
@@ -139,7 +139,7 @@ pub struct GameGolyDataSlint {
     main_info_title: slint::SharedString,
 }
 
-impl GameGolyDataSlint {
+impl FieldDataSlint {
     pub fn field_number_of_elems(&self) -> i32 {
         self.field_number_of_elems
     }
@@ -166,7 +166,7 @@ impl GameGolyDataSlint {
     }
 }
 
-pub fn read_config(file_path: &str) -> Result<GameGolyDataSlint, Box<dyn std::error::Error>>{
+pub fn read_config(file_path: &str) -> Result<FieldDataSlint, Box<dyn std::error::Error>>{
     let config_text = fs::read_to_string(file_path)?;
     let mut gamegoly_data: SerdeGameGolyData = DeJson::deserialize_json(&config_text)?;
 
@@ -181,7 +181,7 @@ pub fn read_config(file_path: &str) -> Result<GameGolyDataSlint, Box<dyn std::er
 
     let main_info_title = gamegoly_data.main_info_to_slint();
 
-    let gamegoly_data_slint = GameGolyDataSlint {
+    let gamegoly_data_slint = FieldDataSlint {
         field_number_of_elems: number_of_tiles,
         field_top: field_slint_top,
         field_left: field_slint_left,

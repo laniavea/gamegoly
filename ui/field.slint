@@ -45,7 +45,7 @@ export component Field inherits Rectangle {
 			for filed_data in FieldAdapter.field_left: FieldTile {
 				FieldTile {
 					min-width: tiles_size_width;
-					min-height: tiles_size;
+					max-height: tiles_size_height;
 					field_data: filed_data;
 					text_size: text_size;
 				}
@@ -54,12 +54,12 @@ export component Field inherits Rectangle {
 
 		center_field_layout := VerticalLayout {
 			min-width: center_layout_width;
-			alignment: space-between;
 			HorizontalLayout {
 				for filed_data in FieldAdapter.field_top: FieldTile {
 					FieldTile {
 						min-width: tiles_size_width;
 						min-height: tiles_size_height;
+						max-height: tiles_size_height;
 						field_data: filed_data;
 						text_size: text_size;
 					}
@@ -103,7 +103,8 @@ export component Field inherits Rectangle {
 				for filed_data in FieldAdapter.field_bottom: FieldTile {
 					FieldTile {
 						min-width: tiles_size_width;
-						min-height: tiles_size;
+						min-height: tiles_size_height;
+						max-height: tiles_size_height;
 						field_data: filed_data;
 						text_size: text_size;
 					}
@@ -115,7 +116,7 @@ export component Field inherits Rectangle {
 			for filed_data in FieldAdapter.field_right: FieldTile {
 				FieldTile {
 					min-width: tiles_size_width;
-					min-height: tiles_size;
+					max-height: tiles_size_height;
 					field_data: filed_data;
 					text_size: text_size;
 				}
