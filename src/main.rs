@@ -2,6 +2,7 @@ mod utils;
 mod config_field;
 mod config_player;
 mod slint_setter;
+mod slint_callbacks;
 
 slint::include_modules!();
 
@@ -17,14 +18,7 @@ fn main() -> Result<(), slint::PlatformError> {
     slint_setter::set_player(main_window_weak.clone(), &player_data);
     slint_setter::set_info_panel(main_window_weak.clone());
 
-    main_window.global::<LowerPanelAdapter>().on_update_player_state(move |player_loc| {
-        let main_window = main_window_weak.unwrap();
-
-        let (ver_state, hor_state) = utils::get_ver_hor_state(player_loc, field_data.field_number_of_elems());
-
-        main_window.global::<FieldAdapter>().set_player_on_ver(ver_state);
-        main_window.global::<FieldAdapter>().set_player_on_hor(hor_state);
-    });
+    slint_callbacks::lower_panel_callbacks(main_window_weak.clone());
 
     main_window.run()
 }

@@ -20,6 +20,13 @@ struct SerdeFieldData {
 #[derive(Debug, Clone, DeJson)]
 struct SerdeMainInfoData {
     title: String,
+    base_roll: String,
+}
+
+impl SerdeMainInfoData {
+    pub fn base_roll(&self) -> String {
+        self.base_roll.clone()
+    }
 }
 
 #[derive(Debug, Clone, DeJson)]
@@ -40,10 +47,15 @@ impl std::fmt::Display for GameGolyConfigError {
             GameGolyConfigError::ColorOverflow => write!(f, "Color contains more than three elements"),
             GameGolyConfigError::IncorrectNumberOfTiles => write!(f, "Number of field tiles must be devided by 4 without reminder"),
         }
-    }
-}
+    } }
 
 impl std::error::Error for GameGolyConfigError {}
+
+impl SerdeGameGolyData {
+    fn main_info(&self) -> &SerdeMainInfoData {
+        &self.main_info
+    }
+}
 
 impl SerdeGameGolyData {
     fn config_validation(&mut self) -> Result<(), Box<dyn std::error::Error>> {
@@ -97,8 +109,7 @@ impl SerdeGameGolyData {
                     rules: slint::ModelRc::new(slint::VecModel::from(slint_rules)),
                     condition_id: now_field.condition_id,
                     fill_color: slint::Color::from_rgb_u8(color_r, color_g, color_b),
-            });
-        }
+            }); }
 
         let number_of_tiles: i32 = slint_field.len() as i32;
 
@@ -166,6 +177,16 @@ impl FieldDataSlint {
     }
 }
 
+pub struct FieldDataAdditional {
+    _base_roll: String,
+}
+
+impl FieldDataAdditional {
+    pub fn _base_roll(&self) -> &str {
+        &self._base_roll
+    }
+}
+
 pub fn read_config(file_path: &str) -> Result<FieldDataSlint, Box<dyn std::error::Error>>{
     let config_text = fs::read_to_string(file_path)?;
     let mut gamegoly_data: SerdeGameGolyData = DeJson::deserialize_json(&config_text)?;
@@ -181,7 +202,7 @@ pub fn read_config(file_path: &str) -> Result<FieldDataSlint, Box<dyn std::error
 
     let main_info_title = gamegoly_data.main_info_to_slint();
 
-    let gamegoly_data_slint = FieldDataSlint {
+    let field_data_slint = FieldDataSlint {
         field_number_of_elems: number_of_tiles,
         field_top: field_slint_top,
         field_left: field_slint_left,
@@ -190,5 +211,10 @@ pub fn read_config(file_path: &str) -> Result<FieldDataSlint, Box<dyn std::error
         main_info_title,
     };
 
-    Ok(gamegoly_data_slint)
+    //TODO: Remove this or use it
+    let _field_data_additional = FieldDataAdditional {
+        _base_roll: gamegoly_data.main_info().base_roll(),
+    };
+
+    Ok(field_data_slint)
 }

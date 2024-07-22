@@ -7,7 +7,7 @@ use slint::ComponentHandle;
 
 pub fn set_field(window: Weak<AppWindow>, field_data: &FieldDataSlint) {
     let main_window = window.unwrap();
-    let field_adapter = main_window.global::<FieldAdapter>();
+    let field_adapter: FieldAdapter = main_window.global::<FieldAdapter>();
 
     field_adapter.set_field_top(field_data.field_top());
     field_adapter.set_field_right(field_data.field_right());

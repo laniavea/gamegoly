@@ -17,3 +17,7 @@ pub fn get_ver_hor_state(player_id: i32, number_of_elems: i32) -> (bool, bool) {
 
     (ver_state, hor_state)
 }
+
+pub fn _roll_next_dice(_dice_rolls_str: &mut str) -> Vec<i32> {
+    vec![]
+}
