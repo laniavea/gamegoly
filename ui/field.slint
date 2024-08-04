@@ -1,9 +1,10 @@
 import { FieldTile } from "./field_tile.slint";
-import { FieldTilesData, FieldMainData } from "./field_data.slint";
+import { FieldTilesData, FieldMainData, DiceRoll } from "./field_data.slint";
 
 import { InfoPanel, InfoPanelAdapter } from "./info_panel.slint";
 
 export global FieldAdapter {
+	// Tiles info
 	in-out property <[FieldTilesData]> field_top;
 	in-out property <[FieldTilesData]> field_right;
 	in-out property <[FieldTilesData]> field_left;
@@ -14,6 +15,9 @@ export global FieldAdapter {
 
 	// Decor vars
 	in-out property <string> main_info_title;
+
+	// Turn vars
+	in-out property <DiceRoll> base_dice;
 
 	// Player vars
 	in-out property <int> player_loc_id;

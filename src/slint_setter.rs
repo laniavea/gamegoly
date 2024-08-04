@@ -21,6 +21,7 @@ pub fn set_field_main_info(window: Weak<AppWindow>, field_main_data: &FieldMainD
     let field_adapter: FieldAdapter = main_window.global::<FieldAdapter>();
 
     field_adapter.set_main_info_title(field_main_data.main_title());
+    field_adapter.set_base_dice(field_main_data.base_dice());
 }
 
 pub fn set_player(window: Weak<AppWindow>, player_data: &PlayerData) {

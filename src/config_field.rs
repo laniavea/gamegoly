@@ -1,6 +1,6 @@
 use std::fs;
 
-use crate::FieldTilesData;
+use crate::{FieldTilesData, DiceRoll};
 use crate::utils;
 
 use nanoserde::DeJson;
@@ -20,18 +20,12 @@ struct SerdeTileData {
 #[derive(Debug, Clone, DeJson)]
 struct SerdeFieldMainData {
     title: String,
-    base_roll: String,
-}
-
-impl SerdeFieldMainData {
-    pub fn base_roll(&self) -> String {
-        self.base_roll.clone()
-    }
+    base_dice: String,
 }
 
 #[derive(Debug, Clone, DeJson)]
 struct SerdeGameGolyData {
-    main_info: SerdeFieldMainData,
+    main_data: SerdeFieldMainData,
     field: Vec<SerdeTileData>,
 }
 
@@ -52,8 +46,8 @@ impl std::fmt::Display for GameGolyConfigError {
 impl std::error::Error for GameGolyConfigError {}
 
 impl SerdeGameGolyData {
-    fn main_info(&self) -> &SerdeFieldMainData {
-        &self.main_info
+    fn main_data(&self) -> &SerdeFieldMainData {
+        &self.main_data
     }
 }
 
@@ -136,8 +130,17 @@ impl SerdeGameGolyData {
         )
     }
 
-    fn main_info_to_slint(&mut self) -> (slint::SharedString, i32) {
-        (slint::SharedString::from(self.main_info.title.clone()), 0)
+    fn main_data_to_slint(&mut self) -> (slint::SharedString, DiceRoll) {
+        let main_data = self.main_data();
+        let mut base_dice = utils::dices_from_string(main_data.base_dice.clone());
+
+        //TODO: Error must be returned
+        if base_dice.len() != 1 {
+            unimplemented!("Return err")
+        }
+
+        //TODO: Change this pop unwrap to ?
+        (slint::SharedString::from(self.main_data.title.clone()), base_dice.pop().unwrap())
     }
 }
 
@@ -173,7 +176,7 @@ impl FieldTilesDataSlint {
 
 pub struct FieldMainDataSlint {
     main_title: slint::SharedString,
-    _base_roll: String,
+    base_dice: DiceRoll,
 }
 
 impl FieldMainDataSlint {
@@ -181,8 +184,8 @@ impl FieldMainDataSlint {
         self.main_title.clone()
     }
 
-    pub fn _base_roll(&self) -> &str {
-        &self._base_roll
+    pub fn base_dice(&self) -> DiceRoll {
+        self.base_dice.clone()
     }
 }
 
@@ -207,11 +210,11 @@ pub fn read_config(file_path: &str) -> Result<(FieldTilesDataSlint, FieldMainDat
         field_bottom: field_slint_bottom,
     };
 
-    let (main_title, _) = gamegoly_data.main_info_to_slint();
+    let (main_title, base_dice) = gamegoly_data.main_data_to_slint();
 
     let field_data_main_slint = FieldMainDataSlint {
         main_title, 
-        _base_roll: gamegoly_data.main_info().base_roll(),
+        base_dice, 
     };
 
     Ok((field_data_tiles_slint, field_data_main_slint))
