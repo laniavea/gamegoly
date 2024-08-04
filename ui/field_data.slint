@@ -1,4 +1,14 @@
-export struct FieldData {
+export struct DiceRoll {
+	first_bound: int,
+	second_bound: int,
+}
+
+export struct FieldMainData {
+	title: string,
+	base_roll: DiceRoll, 
+}
+
+export struct FieldTilesData {
 	title: string,
 	description: string,
 	rules: [string],

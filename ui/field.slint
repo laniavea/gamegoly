@@ -1,13 +1,13 @@
 import { FieldTile } from "./field_tile.slint";
-import { FieldData } from "./field_data.slint";
+import { FieldTilesData, FieldMainData } from "./field_data.slint";
 
 import { InfoPanel, InfoPanelAdapter } from "./info_panel.slint";
 
 export global FieldAdapter {
-	in-out property <[FieldData]> field_top;
-	in-out property <[FieldData]> field_right;
-	in-out property <[FieldData]> field_left;
-	in-out property <[FieldData]> field_bottom;
+	in-out property <[FieldTilesData]> field_top;
+	in-out property <[FieldTilesData]> field_right;
+	in-out property <[FieldTilesData]> field_left;
+	in-out property <[FieldTilesData]> field_bottom;
 
 	out property <int> tiles_count_by_side: field_left.length;
 	in-out property <int> number_of_tiles;

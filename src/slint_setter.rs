@@ -1,20 +1,26 @@
 use crate::{AppWindow, FieldAdapter, InfoPanelAdapter, utils};
-use crate::config_field::FieldDataSlint;
+use crate::config_field::{FieldTilesDataSlint, FieldMainDataSlint};
 use crate::config_player::PlayerData;
 
 use slint::Weak;
 use slint::ComponentHandle;
 
-pub fn set_field(window: Weak<AppWindow>, field_data: &FieldDataSlint) {
+pub fn set_field_tiles(window: Weak<AppWindow>, field_tiles: &FieldTilesDataSlint) {
     let main_window = window.unwrap();
     let field_adapter: FieldAdapter = main_window.global::<FieldAdapter>();
 
-    field_adapter.set_field_top(field_data.field_top());
-    field_adapter.set_field_right(field_data.field_right());
-    field_adapter.set_field_left(field_data.field_left());
-    field_adapter.set_field_bottom(field_data.field_bottom());
-    field_adapter.set_number_of_tiles(field_data.field_number_of_elems());
-    field_adapter.set_main_info_title(field_data.main_info_title());
+    field_adapter.set_field_top(field_tiles.field_top());
+    field_adapter.set_field_right(field_tiles.field_right());
+    field_adapter.set_field_left(field_tiles.field_left());
+    field_adapter.set_field_bottom(field_tiles.field_bottom());
+    field_adapter.set_number_of_tiles(field_tiles.field_number_of_elems());
+}
+
+pub fn set_field_main_info(window: Weak<AppWindow>, field_main_data: &FieldMainDataSlint) {
+    let main_window = window.unwrap();
+    let field_adapter: FieldAdapter = main_window.global::<FieldAdapter>();
+
+    field_adapter.set_main_info_title(field_main_data.main_title());
 }
 
 pub fn set_player(window: Weak<AppWindow>, player_data: &PlayerData) {
