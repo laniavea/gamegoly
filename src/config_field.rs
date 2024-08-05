@@ -12,9 +12,6 @@ struct SerdeTileData {
 	rules: Vec<String>,
     color: String,
 	condition_id: i32,
-
-    #[nserde(default)]
-    fill_color: (u8, u8, u8)
 }
 
 #[derive(Debug, Clone, DeJson)]
@@ -33,34 +30,42 @@ struct SerdeGameGolyData {
 pub enum GameGolyConfigError {
     ColorOverflow,
     IncorrectNumberOfTiles,
+    DiceRollIncomplete,
+    DiceRollIncorrect,
+    DiceRollNoSeparator,
 }
 
 impl std::fmt::Display for GameGolyConfigError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             GameGolyConfigError::ColorOverflow => write!(f, "Color contains more than three elements"),
-            GameGolyConfigError::IncorrectNumberOfTiles => write!(f, "Number of field tiles must be devided by 4 without reminder"),
+            GameGolyConfigError::IncorrectNumberOfTiles => 
+                write!(f, "Number of field tiles must be devided by 4 without reminder and be greater than 7"),
+            GameGolyConfigError::DiceRollIncomplete =>
+                write!(f, "Dice roll always must contain 2 digits separated by comma"),
+            GameGolyConfigError::DiceRollIncorrect => 
+                write!(f, "Dice roll is a range of random number (min,max), these values can't be same or reverted"),
+            GameGolyConfigError::DiceRollNoSeparator => 
+                write!(f, "Dice roll must contain two digits separated by comma"),
         }
     } }
 
 impl std::error::Error for GameGolyConfigError {}
 
 impl SerdeGameGolyData {
-    fn main_data(&self) -> &SerdeFieldMainData {
-        &self.main_data
-    }
-}
+    fn field_tiles_to_slint(&mut self) -> Result<FieldTilesDataSlint, Box<dyn std::error::Error>> {
+        let number_of_tiles: i32 = self.field.len() as i32;
 
-impl SerdeGameGolyData {
-    fn config_validation(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        SerdeGameGolyData::validate_field(&mut self.field)?;
-        Ok(())
-    }
+        if number_of_tiles % 4 != 0 || number_of_tiles < 8 {
+            return Err(Box::new(GameGolyConfigError::IncorrectNumberOfTiles));
+        }
 
-    fn validate_field(field: &mut [SerdeTileData]) -> Result<(), Box<dyn std::error::Error>> {
-        for tile in field.iter_mut() {
-            let rgb = tile.color.split_whitespace();
+        let mut slint_field: Vec<FieldTilesData> = Vec::with_capacity(number_of_tiles as usize);
 
+        for now_field in self.field.drain(..) {
+            let slint_rules: Vec<slint::SharedString> = now_field.rules.iter().map(slint::SharedString::from).collect();
+
+            let rgb = now_field.color.split_whitespace();
             let mut temp_color = [0u8; 3];
 
             for (color_id, color_value) in rgb.into_iter().enumerate() {
@@ -70,42 +75,15 @@ impl SerdeGameGolyData {
                 temp_color[color_id] = color_value.parse()?;
             }
 
-            tile.fill_color = temp_color.into();
-        }
-
-        if field.len() % 4 != 0 || field.is_empty() {
-            return Err(Box::new(GameGolyConfigError::IncorrectNumberOfTiles));
-        }
-
-        Ok(())
-    }
-}
-
-impl SerdeGameGolyData {
-    fn field_tiles_to_slint(&mut self) -> (
-        slint::ModelRc<FieldTilesData>,
-        slint::ModelRc<FieldTilesData>,
-        slint::ModelRc<FieldTilesData>,
-        slint::ModelRc<FieldTilesData>,
-        i32
-        ) {
-        let mut slint_field: Vec<FieldTilesData> = Vec::with_capacity(self.field.len());
-
-        for now_field in self.field.drain(..) {
-            let slint_rules: Vec<slint::SharedString> = now_field.rules.iter().map(slint::SharedString::from).collect();
-
-            let (color_r, color_g, color_b) = now_field.fill_color;
-
             slint_field.push(
                 FieldTilesData {
                     title: slint::SharedString::from(now_field.title),
                     description: slint::SharedString::from(now_field.description),
                     rules: slint::ModelRc::new(slint::VecModel::from(slint_rules)),
                     condition_id: now_field.condition_id,
-                    fill_color: slint::Color::from_rgb_u8(color_r, color_g, color_b),
-            }); }
-
-        let number_of_tiles: i32 = slint_field.len() as i32;
+                    fill_color: slint::Color::from_rgb_u8(temp_color[0], temp_color[1], temp_color[2]),
+            }); 
+        }
 
         let (u_l, u_r, b_r) = utils::get_corners(number_of_tiles as usize);
 
@@ -121,26 +99,23 @@ impl SerdeGameGolyData {
         let left_part = slint::ModelRc::new(
             slint::VecModel::from(slint_field.drain(..).rev().collect::<Vec<FieldTilesData>>()));
 
-        (
-            bottom_part,
-            right_part,
-            top_part,
-            left_part,
-            number_of_tiles,
-        )
+        Ok(FieldTilesDataSlint {
+            field_number_of_elems: number_of_tiles,
+            field_top: top_part,
+            field_left: left_part,
+            field_right: right_part,
+            field_bottom: bottom_part,
+        })
     }
 
-    fn main_data_to_slint(&mut self) -> (slint::SharedString, DiceRoll) {
-        let main_data = self.main_data();
-        let mut base_dice = utils::dices_from_string(main_data.base_dice.clone());
+    fn main_data_to_slint(&mut self) -> Result<FieldMainDataSlint, Box<dyn std::error::Error>> {
+        let main_data = &self.main_data;
+        let base_dice = utils::dices_from_string(&main_data.base_dice)?;
 
-        //TODO: Error must be returned
-        if base_dice.len() != 1 {
-            unimplemented!("Return err")
-        }
-
-        //TODO: Change this pop unwrap to ?
-        (slint::SharedString::from(self.main_data.title.clone()), base_dice.pop().unwrap())
+        Ok(FieldMainDataSlint {
+            main_title: slint::SharedString::from(main_data.title.clone()), 
+            base_dice: slint::ModelRc::new(slint::VecModel::from(base_dice)),
+        })
     }
 }
 
@@ -176,7 +151,7 @@ impl FieldTilesDataSlint {
 
 pub struct FieldMainDataSlint {
     main_title: slint::SharedString,
-    base_dice: DiceRoll,
+    base_dice: slint::ModelRc<DiceRoll>,
 }
 
 impl FieldMainDataSlint {
@@ -184,7 +159,7 @@ impl FieldMainDataSlint {
         self.main_title.clone()
     }
 
-    pub fn base_dice(&self) -> DiceRoll {
+    pub fn base_dice(&self) -> slint::ModelRc<DiceRoll> {
         self.base_dice.clone()
     }
 }
@@ -193,29 +168,9 @@ pub fn read_config(file_path: &str) -> Result<(FieldTilesDataSlint, FieldMainDat
     let config_text = fs::read_to_string(file_path)?;
     let mut gamegoly_data: SerdeGameGolyData = DeJson::deserialize_json(&config_text)?;
 
-    gamegoly_data.config_validation()?;
+    let field_data_tiles_slint = gamegoly_data.field_tiles_to_slint()?;
 
-    let (field_slint_bottom,
-        field_slint_right,
-        field_slint_top,
-        field_slint_left,
-        number_of_tiles
-    ) = gamegoly_data.field_tiles_to_slint();
-
-    let field_data_tiles_slint = FieldTilesDataSlint {
-        field_number_of_elems: number_of_tiles,
-        field_top: field_slint_top,
-        field_left: field_slint_left,
-        field_right: field_slint_right,
-        field_bottom: field_slint_bottom,
-    };
-
-    let (main_title, base_dice) = gamegoly_data.main_data_to_slint();
-
-    let field_data_main_slint = FieldMainDataSlint {
-        main_title, 
-        base_dice, 
-    };
+    let field_data_main_slint = gamegoly_data.main_data_to_slint()?;
 
     Ok((field_data_tiles_slint, field_data_main_slint))
 }

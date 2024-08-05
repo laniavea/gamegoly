@@ -1,4 +1,5 @@
 use crate::DiceRoll;
+use crate::config_field::GameGolyConfigError;
 
 // Returns id of corners for the field
 pub fn get_corners(number_of_elems: usize) ->(usize, usize, usize) {
@@ -20,21 +21,23 @@ pub fn get_ver_hor_state(player_id: i32, number_of_elems: i32) -> (bool, bool) {
     (ver_state, hor_state)
 }
 
-pub fn dices_from_string(dice_roll_string: String) -> Vec<DiceRoll> {
+// Returs vec of DiceRolls based on string, must be used only within config read
+pub fn dices_from_string(dice_roll_string: &str) -> Result<Vec<DiceRoll>, Box<dyn std::error::Error>> {
     let mut dice_rolls: Vec<DiceRoll> = vec![];
-    //TODO: Handle some errors in comma_pos, parse ints
     for now_roll in dice_roll_string.split_whitespace() {
-        let comma_pos = now_roll.find(',').unwrap();
+        let Some(comma_pos) = now_roll.find(',') else {
+            return Err(Box::new(GameGolyConfigError::DiceRollNoSeparator))
+        };
 
         if comma_pos == now_roll.len() - 1 {
-            unimplemented!("Handle error when , is last character")
+            return Err(Box::new(GameGolyConfigError::DiceRollIncomplete));
         }
 
-        let first_bound: i32 = now_roll[..comma_pos].parse().unwrap();
-        let second_bound: i32 = now_roll[comma_pos+1..].parse().unwrap();
+        let first_bound: i32 = now_roll[..comma_pos].parse()?;
+        let second_bound: i32 = now_roll[comma_pos+1..].parse()?;
 
         if second_bound <= first_bound {
-            unimplemented!("Handle error when bounds equal or not ok")
+            return Err(Box::new(GameGolyConfigError::DiceRollIncorrect));
         }
 
         dice_rolls.push(DiceRoll{
@@ -42,7 +45,7 @@ pub fn dices_from_string(dice_roll_string: String) -> Vec<DiceRoll> {
             second_bound,
         })
     }
-    dice_rolls
+    Ok(dice_rolls)
 }
 
 //TODO: Remove or recreate using RollDice structs if so
