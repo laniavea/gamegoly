@@ -1,3 +1,6 @@
+use rand::Rng;
+use slint::{Model, VecModel};
+
 use crate::DiceRoll;
 use crate::config_field::GameGolyConfigError;
 
@@ -36,7 +39,7 @@ pub fn dices_from_string(dice_roll_string: &str) -> Result<Vec<DiceRoll>, Box<dy
         let first_bound: i32 = now_roll[..comma_pos].parse()?;
         let second_bound: i32 = now_roll[comma_pos+1..].parse()?;
 
-        if second_bound <= first_bound {
+        if second_bound < first_bound {
             return Err(Box::new(GameGolyConfigError::DiceRollIncorrect));
         }
 
@@ -49,6 +52,15 @@ pub fn dices_from_string(dice_roll_string: &str) -> Result<Vec<DiceRoll>, Box<dy
 }
 
 //TODO: Remove or recreate using RollDice structs if so
-pub fn _roll_next_dice(_dice_rolls_str: &mut str) -> Vec<i32> {
-    vec![]
+pub fn roll_dices(dices: slint::ModelRc<DiceRoll>) -> Vec<i32> {
+    let dices = dices.as_any().downcast_ref::<VecModel<DiceRoll>>().unwrap();
+    let mut dice_rolls = Vec::with_capacity(dices.row_count());
+    println!("{}", dices.row_count());
+
+    let mut rng = rand::thread_rng();
+    for dice in dices.iter() {
+        dice_rolls.push(rng.gen_range(dice.first_bound..dice.second_bound+1));
+    }
+
+    dice_rolls
 }

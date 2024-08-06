@@ -44,7 +44,7 @@ impl std::fmt::Display for GameGolyConfigError {
             GameGolyConfigError::DiceRollIncomplete =>
                 write!(f, "Dice roll always must contain 2 digits separated by comma"),
             GameGolyConfigError::DiceRollIncorrect => 
-                write!(f, "Dice roll is a range of random number (min,max), these values can't be same or reverted"),
+                write!(f, "Dice roll is a range of random number (min,max), these values can't be reverted"),
             GameGolyConfigError::DiceRollNoSeparator => 
                 write!(f, "Dice roll must contain two digits separated by comma"),
         }
