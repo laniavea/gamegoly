@@ -55,7 +55,6 @@ pub fn dices_from_string(dice_roll_string: &str) -> Result<Vec<DiceRoll>, Box<dy
 pub fn roll_dices(dices: slint::ModelRc<DiceRoll>) -> Vec<i32> {
     let dices = dices.as_any().downcast_ref::<VecModel<DiceRoll>>().unwrap();
     let mut dice_rolls = Vec::with_capacity(dices.row_count());
-    println!("{}", dices.row_count());
 
     let mut rng = rand::thread_rng();
     for dice in dices.iter() {

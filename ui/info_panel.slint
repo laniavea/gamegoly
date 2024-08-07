@@ -4,6 +4,9 @@ export global InfoPanelAdapter {
 	in_out property <int> panel_mode;
 
 	in-out property <FieldTilesData> tile_data;
+
+	in-out property <int> dices_count;
+	in-out property <[int]> dices;
 }
 
 //NOTE: I couldn't find smth simular to case which operates elements.
@@ -11,6 +14,7 @@ export global InfoPanelAdapter {
 
 export component InfoPanel inherits Rectangle {
 	in property <length> normal_text_size;
+	in property <length> panel_width;
 
 	if InfoPanelAdapter.panel_mode == 1:
 		Rectangle {
@@ -49,8 +53,32 @@ export component InfoPanel inherits Rectangle {
 			}
 		}
 
-	//TODO: Remove test panel, change startup panel to tile where player now is.
 	if InfoPanelAdapter.panel_mode == 2:
+		Rectangle {
+			VerticalLayout {
+				alignment: center;
+				HorizontalLayout {
+					alignment: space-around;
+					for dice_value in InfoPanelAdapter.dices: Rectangle {
+						width: panel_width / (InfoPanelAdapter.dices_count + 1);
+						height: panel_width / (InfoPanelAdapter.dices_count + 1);
+
+						border-color: black;
+						border-width: 2px;
+
+						Text {
+							text: dice_value;
+							font-size: parent.height;
+							wrap: word-wrap;
+							overflow: elide;
+						}
+					}
+				}
+			}
+		}
+
+	//TODO: Remove test panel, change startup panel to tile where player now is.
+	if InfoPanelAdapter.panel_mode == 3:
 		Rectangle {
 			background: white;
 			Text {

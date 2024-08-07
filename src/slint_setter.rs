@@ -40,5 +40,5 @@ pub fn set_player(window: Weak<AppWindow>, player_data: &PlayerData) {
 pub fn set_info_panel(window: Weak<AppWindow>) {
     let main_window = window.unwrap();
     let info_panel_adapter = main_window.global::<InfoPanelAdapter>();
-    info_panel_adapter.set_panel_mode(2);
+    info_panel_adapter.set_panel_mode(3);
 }

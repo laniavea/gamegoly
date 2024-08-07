@@ -1,4 +1,4 @@
-use crate::{AppWindow, FieldAdapter, LowerPanelAdapter, utils};
+use crate::{AppWindow, FieldAdapter, LowerPanelAdapter, InfoPanelAdapter, utils};
 
 use slint::Weak;
 use slint::ComponentHandle;
@@ -18,8 +18,14 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>){
     main_window.global::<LowerPanelAdapter>().on_roll_dice(move || {
         let new_main_window = main_window_weak.unwrap();
         let field_adapter = new_main_window.global::<FieldAdapter>();
+        let info_panel_adapter = new_main_window.global::<InfoPanelAdapter>();
 
         let dices = utils::roll_dices(field_adapter.get_base_dice());
+
+        info_panel_adapter.set_dices_count(dices.len() as i32);
+        info_panel_adapter.set_dices(slint::ModelRc::new(slint::VecModel::from(dices.clone())));
+        info_panel_adapter.set_panel_mode(2);
+
         let new_player_loc= dices.iter().sum::<i32>() + field_adapter.get_player_loc_id();
 
         update_player_pos(field_adapter, new_player_loc);
