@@ -22,11 +22,27 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>){
 
         let dices = utils::roll_dices(field_adapter.get_base_dice());
 
+        let mut dices_sum: i32 = 0;
+        let mut dices_max_value: u32 = 0;
+        let mut dices_max_value_is_pos: bool = true;
+
+        for value in &dices {
+            dices_sum += value;
+
+            if value.unsigned_abs() > dices_max_value {
+                dices_max_value = value.unsigned_abs();
+                dices_max_value_is_pos = *value >= 0;
+            }
+        }
+
+        let max_digits = (dices_max_value.checked_ilog10().unwrap_or(0) as i32) + 1;
+
         info_panel_adapter.set_dices_count(dices.len() as i32);
+        info_panel_adapter.set_dices_max_digits(max_digits + if dices_max_value_is_pos {0} else {1});
         info_panel_adapter.set_dices(slint::ModelRc::new(slint::VecModel::from(dices.clone())));
         info_panel_adapter.set_panel_mode(2);
 
-        let new_player_loc= dices.iter().sum::<i32>() + field_adapter.get_player_loc_id();
+        let new_player_loc= dices_sum + field_adapter.get_player_loc_id();
 
         update_player_pos(field_adapter, new_player_loc);
     });

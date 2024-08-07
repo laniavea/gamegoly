@@ -9,8 +9,22 @@ slint::include_modules!();
 fn main() -> Result<(), slint::PlatformError> {
     let main_window = AppWindow::new()?;
 
-    let (field_tiles, field_main_data) = config_field::read_config("./test_field.json").unwrap();
-    let player_data = config_player::read_config("./player.json").unwrap();
+    let (field_tiles, field_main_data) = 
+        match config_field::read_config("./test_field.json") {
+            Err(err) => {
+                eprintln!("Exited with next error while field config read: {err}");
+                return Ok(())
+            },
+            Ok((tiles, main_data)) => (tiles, main_data),
+        };
+
+    let player_data = match config_player::read_config("./player.json") {
+        Err(err) => {
+            eprintln!("Exited with next error while player config read: {err}");
+            return Ok(())
+        },
+        Ok(player_data) => player_data,
+    };
 
     let main_window_weak = main_window.as_weak();
 

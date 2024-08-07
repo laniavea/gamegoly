@@ -42,11 +42,11 @@ impl std::fmt::Display for GameGolyConfigError {
             GameGolyConfigError::IncorrectNumberOfTiles => 
                 write!(f, "Number of field tiles must be devided by 4 without reminder and be greater than 7"),
             GameGolyConfigError::DiceRollIncomplete =>
-                write!(f, "Dice roll always must contain 2 digits separated by comma"),
+                write!(f, "Base roll always must contain 2 digits separated by comma"),
             GameGolyConfigError::DiceRollIncorrect => 
-                write!(f, "Dice roll is a range of random number (min,max), these values can't be reverted"),
+                write!(f, "Base roll is a range of random number (min,max), these values can't be reverted"),
             GameGolyConfigError::DiceRollNoSeparator => 
-                write!(f, "Dice roll must contain two digits separated by comma"),
+                write!(f, "Base roll must contain two digits separated by comma"),
         }
     } }
 
@@ -57,6 +57,7 @@ impl SerdeGameGolyData {
         let number_of_tiles: i32 = self.field.len() as i32;
 
         if number_of_tiles % 4 != 0 || number_of_tiles < 8 {
+            eprintln!("Found {number_of_tiles} tiles, exiting");
             return Err(Box::new(GameGolyConfigError::IncorrectNumberOfTiles));
         }
 

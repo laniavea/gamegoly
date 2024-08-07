@@ -6,6 +6,7 @@ export global InfoPanelAdapter {
 	in-out property <FieldTilesData> tile_data;
 
 	in-out property <int> dices_count;
+	in-out property <int> dices_max_digits;
 	in-out property <[int]> dices;
 }
 
@@ -64,11 +65,11 @@ export component InfoPanel inherits Rectangle {
 						height: panel_width / (InfoPanelAdapter.dices_count + 1);
 
 						border-color: black;
-						border-width: 2px;
+						border-width: 3px;
 
 						Text {
 							text: dice_value;
-							font-size: parent.height;
+							font-size: parent.width / InfoPanelAdapter.dices_max_digits;
 							wrap: word-wrap;
 							overflow: elide;
 						}
