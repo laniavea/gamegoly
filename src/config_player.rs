@@ -1,15 +1,15 @@
 use std::fs;
 
-use nanoserde::DeJson;
+use nanoserde::{DeJson, SerJson};
 
-#[derive(Debug, Clone, DeJson)]
+#[derive(Debug, Clone, DeJson, SerJson)]
 struct SerdePlayerData {
     player_location: i32,
 }
 
 #[derive(Debug, Clone)]
 pub struct PlayerData {
-    location: i32,
+    pub location: i32,
 }
 
 impl PlayerData {
@@ -25,4 +25,14 @@ pub fn read_config(file_path: &str) -> Result<PlayerData, Box<dyn std::error::Er
     Ok(PlayerData{
         location: player_data.player_location,
     })
+}
+
+pub fn serialize_player(player_loc: i32) -> Result<(), Box<dyn std::error::Error>> {
+    let serde_player_data = SerdePlayerData {
+        player_location: player_loc,
+    };
+
+    let result = SerJson::serialize_json(&serde_player_data);
+    fs::write("player.json", result)?;
+    Ok(())
 }

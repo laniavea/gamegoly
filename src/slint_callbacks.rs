@@ -1,11 +1,12 @@
 use crate::{AppWindow, FieldAdapter, LowerPanelAdapter, InfoPanelAdapter, utils};
+use crate::config_player::serialize_player;
 
 use slint::Weak;
 use slint::ComponentHandle;
-
 pub fn lower_panel_callbacks(window: Weak<AppWindow>){
     let main_window = window.unwrap();
 
+    // +1 turn
     let main_window_weak = main_window.as_weak();
     main_window.global::<LowerPanelAdapter>().on_update_player_state(move |player_loc| {
         let new_main_window = main_window_weak.unwrap();
@@ -14,6 +15,7 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>){
         update_player_pos(field_adapter, player_loc);
     });
 
+    // Dice roll
     let main_window_weak = main_window.as_weak();
     main_window.global::<LowerPanelAdapter>().on_roll_dice(move || {
         let new_main_window = main_window_weak.unwrap();
@@ -46,6 +48,17 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>){
 
         update_player_pos(field_adapter, new_player_loc);
     });
+
+    // Save player state
+    let main_window_weak = main_window.as_weak();
+    main_window.global::<LowerPanelAdapter>().on_save_player_state(move || {
+        let new_main_window = main_window_weak.unwrap();
+        let field_adapter = new_main_window.global::<FieldAdapter>();
+
+        //TODO:Handle this error
+        serialize_player(field_adapter.get_player_loc_id()).unwrap();
+    });
+
 }
 
 fn update_player_pos(field_adapter: FieldAdapter, player_loc: i32) {

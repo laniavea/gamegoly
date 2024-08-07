@@ -5,6 +5,7 @@ import { FieldAdapter } from "./field.slint";
 export global LowerPanelAdapter {
 	callback update_player_state(int);
 	callback roll_dice();
+	callback save_player_state();
 }
 
 export component LowerPanel inherits Rectangle {
@@ -24,6 +25,13 @@ export component LowerPanel inherits Rectangle {
 			text: "Roll dice";
 			clicked => {
 				LowerPanelAdapter.roll_dice();
+			}
+		}
+
+		Button {
+			text: "Save";
+			clicked => {
+				LowerPanelAdapter.save_player_state();
 			}
 		}
 	}
