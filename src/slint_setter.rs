@@ -22,6 +22,7 @@ pub fn set_field_main_info(window: Weak<AppWindow>, field_main_data: &FieldMainD
 
     field_adapter.set_main_info_title(field_main_data.main_title());
     field_adapter.set_base_dice(field_main_data.base_dice());
+    field_adapter.set_turn_order(field_main_data.turn_order());
 }
 
 pub fn set_player(window: Weak<AppWindow>, player_data: &PlayerData) {
@@ -40,5 +41,5 @@ pub fn set_player(window: Weak<AppWindow>, player_data: &PlayerData) {
 pub fn set_info_panel(window: Weak<AppWindow>) {
     let main_window = window.unwrap();
     let info_panel_adapter = main_window.global::<InfoPanelAdapter>();
-    info_panel_adapter.set_panel_mode(3);
+    info_panel_adapter.set_panel_mode(4);
 }

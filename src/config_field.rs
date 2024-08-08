@@ -18,6 +18,7 @@ struct SerdeTileData {
 struct SerdeFieldMainData {
     title: String,
     base_dice: String,
+    turn_order: String,
 }
 
 #[derive(Debug, Clone, DeJson)]
@@ -114,8 +115,9 @@ impl SerdeGameGolyData {
         let base_dice = utils::dices_from_string(&main_data.base_dice)?;
 
         Ok(FieldMainDataSlint {
-            main_title: slint::SharedString::from(main_data.title.clone()), 
+            main_title: slint::SharedString::from(&main_data.title), 
             base_dice: slint::ModelRc::new(slint::VecModel::from(base_dice)),
+            turn_order: slint::SharedString::from(&main_data.turn_order),
         })
     }
 }
@@ -153,6 +155,7 @@ impl FieldTilesDataSlint {
 pub struct FieldMainDataSlint {
     main_title: slint::SharedString,
     base_dice: slint::ModelRc<DiceRoll>,
+    turn_order: slint::SharedString,
 }
 
 impl FieldMainDataSlint {
@@ -162,6 +165,10 @@ impl FieldMainDataSlint {
 
     pub fn base_dice(&self) -> slint::ModelRc<DiceRoll> {
         self.base_dice.clone()
+    }
+
+    pub fn turn_order(&self) -> slint::SharedString {
+        self.turn_order.clone()
     }
 }
 

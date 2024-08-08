@@ -1,3 +1,5 @@
+import { Button } from "std-widgets.slint";
+
 import { FieldTile } from "./field_tile.slint";
 import { FieldTilesData, FieldMainData, DiceRoll } from "./field_data.slint";
 
@@ -15,6 +17,7 @@ export global FieldAdapter {
 
 	// Decor vars
 	in-out property <string> main_info_title;
+	in-out property <string> turn_order;
 
 	// Turn vars
 	in-out property <[DiceRoll]> base_dice;
@@ -57,6 +60,7 @@ export component Field inherits Rectangle {
 		}
 
 		center_field_layout := VerticalLayout {
+			alignment: center;
 			min-width: center_layout_width;
 			HorizontalLayout {
 				for filed_data in FieldAdapter.field_top: FieldTile {
@@ -70,10 +74,18 @@ export component Field inherits Rectangle {
 				}
 			}
 			HorizontalLayout {
-				VerticalLayout {
-					Rectangle {
-						preferred-width: tiles_size_width;
-						background: orange;
+				Rectangle {
+					width: now_width / 12;
+					VerticalLayout {
+						alignment: center;
+						Button {
+							text: "?";
+							x: parent.width / 10;
+							width: parent.width / 2;
+							clicked => {
+								InfoPanelAdapter.panel_mode = 3;
+							}
+						}
 					}
 				}
 				VerticalLayout {
@@ -91,17 +103,14 @@ export component Field inherits Rectangle {
 					}
 
 					InfoPanel {
-						panel_width: parent.width;
+						panel_minimal_side: min(parent.width, parent.height);
 						normal_text_size: text_size;
 						preferred-height: (now_height - 2 * tiles_size_height) / 2;
 
 					}
 				}
-				VerticalLayout {
-					Rectangle {
-						preferred-width: tiles_size_width;
-						background: orange;
-					}
+				Rectangle {
+					width: now_width / 12;
 				}
 			}
 			HorizontalLayout {

@@ -15,7 +15,7 @@ export global InfoPanelAdapter {
 
 export component InfoPanel inherits Rectangle {
 	in property <length> normal_text_size;
-	in property <length> panel_width;
+	in property <length> panel_minimal_side;
 
 	if InfoPanelAdapter.panel_mode == 1:
 		Rectangle {
@@ -61,8 +61,8 @@ export component InfoPanel inherits Rectangle {
 				HorizontalLayout {
 					alignment: space-around;
 					for dice_value in InfoPanelAdapter.dices: Rectangle {
-						width: panel_width / (InfoPanelAdapter.dices_count + 1);
-						height: panel_width / (InfoPanelAdapter.dices_count + 1);
+						width: panel_minimal_side / (InfoPanelAdapter.dices_count + 1);
+						height: panel_minimal_side / (InfoPanelAdapter.dices_count + 1);
 
 						border-color: black;
 						border-width: 3px;
@@ -78,8 +78,21 @@ export component InfoPanel inherits Rectangle {
 			}
 		}
 
-	//TODO: Remove test panel, change startup panel to tile where player now is.
 	if InfoPanelAdapter.panel_mode == 3:
+		Rectangle {
+			VerticalLayout {
+				Text {
+					text: "here0";
+				}
+
+				Text {
+					text: "here";
+				}
+			}
+		}
+
+	//TODO: Remove test panel, change startup panel to tile where player now is.
+	if InfoPanelAdapter.panel_mode == 4:
 		Rectangle {
 			background: white;
 			Text {
