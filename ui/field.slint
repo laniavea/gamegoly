@@ -5,6 +5,11 @@ import { FieldTilesData, FieldMainData, DiceRoll } from "./field_data.slint";
 
 import { InfoPanel, InfoPanelAdapter } from "./info_panel.slint";
 
+export struct HelpData {
+	help_header: string,
+	help_text: string
+}
+
 export global FieldAdapter {
 	// Tiles info
 	in-out property <[FieldTilesData]> field_top;
@@ -17,7 +22,9 @@ export global FieldAdapter {
 
 	// Decor vars
 	in-out property <string> main_info_title;
+	//TODO:REMOVE TURN ORDER
 	in-out property <string> turn_order;
+	in-out property <[HelpData]> help_data;
 
 	// Turn vars
 	in-out property <[DiceRoll]> base_dice;
@@ -78,11 +85,28 @@ export component Field inherits Rectangle {
 					width: now_width / 12;
 					VerticalLayout {
 						alignment: center;
+
+						property <int> button_counter: 0;
+
+						for now_help_data in FieldAdapter.help_data: Button {
+							text: now_help_data.help_header;
+							x: parent.width / 10;
+							width: parent.width / 2;
+							clicked => {
+								InfoPanelAdapter.any_header = now_help_data.help_header;
+								InfoPanelAdapter.any_text = now_help_data.help_text;
+								InfoPanelAdapter.panel_mode = 3;
+								button_counter += 1;
+							}
+						}
+
 						Button {
 							text: "?";
 							x: parent.width / 10;
 							width: parent.width / 2;
 							clicked => {
+								InfoPanelAdapter.any_header = "Turn order";
+								InfoPanelAdapter.any_text = FieldAdapter.turn_order;
 								InfoPanelAdapter.panel_mode = 3;
 							}
 						}
@@ -91,8 +115,6 @@ export component Field inherits Rectangle {
 				VerticalLayout {
 					Rectangle {
 						preferred-height: (now_height - 2 * tiles_size_height) / 2;
-						border-width: 2px;
-						border-color: black;
 						Text {
 							text: FieldAdapter.main_info_title;
 							vertical-alignment: center;

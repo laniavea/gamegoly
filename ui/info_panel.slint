@@ -8,14 +8,16 @@ export global InfoPanelAdapter {
 	in-out property <int> dices_count;
 	in-out property <int> dices_max_digits;
 	in-out property <[int]> dices;
+
+	in-out property <string> any_header;
+	in-out property <string> any_text;
 }
 
 //NOTE: I couldn't find smth simular to case which operates elements.
 // Only states to operate properties inside element and if else if during callback call
 
 export component InfoPanel inherits Rectangle {
-	in property <length> normal_text_size;
-	in property <length> panel_minimal_side;
+	in property <length> normal_text_size; in property <length> panel_minimal_side;
 
 	if InfoPanelAdapter.panel_mode == 1:
 		Rectangle {
@@ -82,11 +84,23 @@ export component InfoPanel inherits Rectangle {
 		Rectangle {
 			VerticalLayout {
 				Text {
-					text: "here0";
+					color: black;
+					horizontal-alignment: center;
+					vertical-alignment: center;
+					font-size: normal_text_size * 2.5;
+					font-weight: 600;
+					wrap: word-wrap;
+					overflow: elide;
+					text: InfoPanelAdapter.any_header;
 				}
 
 				Text {
-					text: "here";
+					text: InfoPanelAdapter.any_text;
+					horizontal-alignment: center;
+					vertical-alignment: center;
+					font-size: normal_text_size;
+					wrap: word-wrap;
+					overflow: elide;
 				}
 			}
 		}

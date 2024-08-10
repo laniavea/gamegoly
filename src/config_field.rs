@@ -1,6 +1,6 @@
 use std::fs;
 
-use crate::{FieldTilesData, DiceRoll};
+use crate::{FieldTilesData, DiceRoll, HelpData};
 use crate::utils;
 
 use nanoserde::DeJson;
@@ -19,6 +19,8 @@ struct SerdeFieldMainData {
     title: String,
     base_dice: String,
     turn_order: String,
+    help_text_headers: Vec<String>,
+    help_text: Vec<String>,
 }
 
 #[derive(Debug, Clone, DeJson)]
@@ -29,17 +31,19 @@ struct SerdeGameGolyData {
 
 #[derive(Debug, Clone)]
 pub enum GameGolyConfigError {
-    ColorOverflow,
+    ColorOverflow(usize),
     IncorrectNumberOfTiles,
     DiceRollIncomplete,
     DiceRollIncorrect,
     DiceRollNoSeparator,
+    IncorrectNumberOfHelpTexts,
 }
 
 impl std::fmt::Display for GameGolyConfigError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
-            GameGolyConfigError::ColorOverflow => write!(f, "Color contains more than three elements"),
+            GameGolyConfigError::ColorOverflow(field_num) =>
+                write!(f, "Color in line {field_num} contains more than three elements"),
             GameGolyConfigError::IncorrectNumberOfTiles => 
                 write!(f, "Number of field tiles must be devided by 4 without reminder and be greater than 7"),
             GameGolyConfigError::DiceRollIncomplete =>
@@ -48,6 +52,8 @@ impl std::fmt::Display for GameGolyConfigError {
                 write!(f, "Base roll is a range of random number (min,max), these values can't be reverted"),
             GameGolyConfigError::DiceRollNoSeparator => 
                 write!(f, "Base roll must contain two digits separated by comma"),
+            GameGolyConfigError::IncorrectNumberOfHelpTexts => 
+                write!(f, "For every help button name must be only one help text"),
         }
     } }
 
@@ -64,7 +70,7 @@ impl SerdeGameGolyData {
 
         let mut slint_field: Vec<FieldTilesData> = Vec::with_capacity(number_of_tiles as usize);
 
-        for now_field in self.field.drain(..) {
+        for (now_field_id, now_field) in self.field.drain(..).enumerate() {
             let slint_rules: Vec<slint::SharedString> = now_field.rules.iter().map(slint::SharedString::from).collect();
 
             let rgb = now_field.color.split_whitespace();
@@ -72,7 +78,7 @@ impl SerdeGameGolyData {
 
             for (color_id, color_value) in rgb.into_iter().enumerate() {
                 if color_id == 3 {
-                    return Err(Box::new(GameGolyConfigError::ColorOverflow))
+                    return Err(Box::new(GameGolyConfigError::ColorOverflow(now_field_id+1)))
                 }
                 temp_color[color_id] = color_value.parse()?;
             }
@@ -114,10 +120,23 @@ impl SerdeGameGolyData {
         let main_data = &self.main_data;
         let base_dice = utils::dices_from_string(&main_data.base_dice)?;
 
+        if main_data.help_text_headers.len() != main_data.help_text.len() {
+            return Err(Box::new(GameGolyConfigError::IncorrectNumberOfHelpTexts));
+        }
+
+        let mut help_data: Vec<HelpData> = vec![];
+        for (now_id, now_header) in main_data.help_text_headers.iter().enumerate() {
+            help_data.push(HelpData {
+                help_header: slint::SharedString::from(now_header),
+                help_text: slint::SharedString::from(&main_data.help_text[now_id]),
+            })
+        }
+
         Ok(FieldMainDataSlint {
             main_title: slint::SharedString::from(&main_data.title), 
             base_dice: slint::ModelRc::new(slint::VecModel::from(base_dice)),
             turn_order: slint::SharedString::from(&main_data.turn_order),
+            help_data: slint::ModelRc::new(slint::VecModel::from(help_data)),
         })
     }
 }
@@ -152,10 +171,12 @@ impl FieldTilesDataSlint {
     }
 }
 
+//TODO: Remove turn order
 pub struct FieldMainDataSlint {
     main_title: slint::SharedString,
     base_dice: slint::ModelRc<DiceRoll>,
     turn_order: slint::SharedString,
+    help_data: slint::ModelRc<HelpData>,
 }
 
 impl FieldMainDataSlint {
@@ -169,6 +190,10 @@ impl FieldMainDataSlint {
 
     pub fn turn_order(&self) -> slint::SharedString {
         self.turn_order.clone()
+    }
+
+    pub fn help_data(&self) -> slint::ModelRc<HelpData> {
+        self.help_data.clone()
     }
 }
 
