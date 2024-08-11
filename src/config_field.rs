@@ -18,14 +18,27 @@ struct SerdeTileData {
 struct SerdeFieldMainData {
     title: String,
     base_dice: String,
-    turn_order: String,
     help_text_headers: Vec<String>,
     help_text: Vec<String>,
 }
 
 #[derive(Debug, Clone, DeJson)]
+struct SerdeListData {
+    name: String,
+    elements: Vec<String>,
+}
+
+#[derive(Debug, Clone, DeJson)]
+struct SerdeConditionData {
+    id: i32,
+    rule: String,
+}
+
+#[derive(Debug, Clone, DeJson)]
 struct SerdeGameGolyData {
     main_data: SerdeFieldMainData,
+    static_lists: Vec<SerdeListData>,
+    conditions: Vec<SerdeConditionData>,
     field: Vec<SerdeTileData>,
 }
 
@@ -135,7 +148,6 @@ impl SerdeGameGolyData {
         Ok(FieldMainDataSlint {
             main_title: slint::SharedString::from(&main_data.title), 
             base_dice: slint::ModelRc::new(slint::VecModel::from(base_dice)),
-            turn_order: slint::SharedString::from(&main_data.turn_order),
             help_data: slint::ModelRc::new(slint::VecModel::from(help_data)),
         })
     }
@@ -171,11 +183,9 @@ impl FieldTilesDataSlint {
     }
 }
 
-//TODO: Remove turn order
 pub struct FieldMainDataSlint {
     main_title: slint::SharedString,
     base_dice: slint::ModelRc<DiceRoll>,
-    turn_order: slint::SharedString,
     help_data: slint::ModelRc<HelpData>,
 }
 
@@ -186,10 +196,6 @@ impl FieldMainDataSlint {
 
     pub fn base_dice(&self) -> slint::ModelRc<DiceRoll> {
         self.base_dice.clone()
-    }
-
-    pub fn turn_order(&self) -> slint::SharedString {
-        self.turn_order.clone()
     }
 
     pub fn help_data(&self) -> slint::ModelRc<HelpData> {

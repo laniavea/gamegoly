@@ -22,7 +22,6 @@ pub fn set_field_main_info(window: Weak<AppWindow>, field_main_data: &FieldMainD
 
     field_adapter.set_main_info_title(field_main_data.main_title());
     field_adapter.set_base_dice(field_main_data.base_dice());
-    field_adapter.set_turn_order(field_main_data.turn_order());
     field_adapter.set_help_data(field_main_data.help_data());
 }
 

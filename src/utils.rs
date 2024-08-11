@@ -51,7 +51,6 @@ pub fn dices_from_string(dice_roll_string: &str) -> Result<Vec<DiceRoll>, Box<dy
     Ok(dice_rolls)
 }
 
-//TODO: Remove or recreate using RollDice structs if so
 pub fn roll_dices(dices: slint::ModelRc<DiceRoll>) -> Vec<i32> {
     let dices = dices.as_any().downcast_ref::<VecModel<DiceRoll>>().unwrap();
     let mut dice_rolls = Vec::with_capacity(dices.row_count());
