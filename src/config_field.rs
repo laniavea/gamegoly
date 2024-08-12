@@ -1,6 +1,6 @@
 use std::fs;
 
-use crate::{FieldTilesData, DiceRoll, HelpData};
+use crate::{FieldTilesData, DiceRoll, HelpData, ListData};
 use crate::utils;
 
 use nanoserde::DeJson;
@@ -131,6 +131,7 @@ impl SerdeGameGolyData {
 
     fn main_data_to_slint(&mut self) -> Result<FieldMainDataSlint, Box<dyn std::error::Error>> {
         let main_data = &self.main_data;
+        let static_lists = &self.static_lists;
         let base_dice = utils::dices_from_string(&main_data.base_dice)?;
 
         if main_data.help_text_headers.len() != main_data.help_text.len() {
@@ -145,10 +146,25 @@ impl SerdeGameGolyData {
             })
         }
 
+        let mut lists: Vec<ListData> = vec![];
+
+        for list in static_lists {
+            let mut now_list_elements: Vec<slint::SharedString> = vec![];
+            for list_element in &list.elements {
+                now_list_elements.push(slint::SharedString::from(list_element))
+            }
+
+            lists.push(ListData {
+                list_name: slint::SharedString::from(&list.name),
+                list_elements: slint::ModelRc::new(slint::VecModel::from(now_list_elements)),
+            })
+        }
+
         Ok(FieldMainDataSlint {
             main_title: slint::SharedString::from(&main_data.title), 
             base_dice: slint::ModelRc::new(slint::VecModel::from(base_dice)),
             help_data: slint::ModelRc::new(slint::VecModel::from(help_data)),
+            static_lists: slint::ModelRc::new(slint::VecModel::from(lists)),
         })
     }
 }
@@ -187,6 +203,7 @@ pub struct FieldMainDataSlint {
     main_title: slint::SharedString,
     base_dice: slint::ModelRc<DiceRoll>,
     help_data: slint::ModelRc<HelpData>,
+    static_lists: slint::ModelRc<ListData>,
 }
 
 impl FieldMainDataSlint {
@@ -200,6 +217,10 @@ impl FieldMainDataSlint {
 
     pub fn help_data(&self) -> slint::ModelRc<HelpData> {
         self.help_data.clone()
+    }
+
+    pub fn static_lists(&self) -> slint::ModelRc<ListData> {
+        self.static_lists.clone()
     }
 }
 

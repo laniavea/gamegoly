@@ -7,7 +7,12 @@ import { InfoPanel, InfoPanelAdapter } from "./info_panel.slint";
 
 export struct HelpData {
 	help_header: string,
-	help_text: string
+	help_text: string,
+}
+
+export struct ListData {
+	list_name: string,
+	list_elements: [string],
 }
 
 export global FieldAdapter {
@@ -27,10 +32,15 @@ export global FieldAdapter {
 	// Turn vars
 	in-out property <[DiceRoll]> base_dice;
 
+	// Statice lists
+	in-out property <[ListData]> lists;
+
 	// Player vars
 	in-out property <int> player_loc_id;
 	in-out property <bool> player_on_hor;
 	in-out property <bool> player_on_ver;
+
+	callback roll_list_item(ListData) -> string;
 }
 
 export component Field inherits Rectangle {
@@ -85,6 +95,13 @@ export component Field inherits Rectangle {
 					VerticalLayout {
 						alignment: center;
 
+						Text {
+							horizontal-alignment: center;
+							font-size: text_size;
+							font-weight: 600;
+							text: "Help";
+						}
+
 						for now_help_data in FieldAdapter.help_data: Button {
 							text: now_help_data.help_header;
 							x: parent.width / 10;
@@ -93,6 +110,24 @@ export component Field inherits Rectangle {
 								InfoPanelAdapter.any_header = now_help_data.help_header;
 								InfoPanelAdapter.any_text = now_help_data.help_text;
 								InfoPanelAdapter.panel_mode = 3;
+							}
+						}
+
+						Text {
+							horizontal-alignment: center;
+							font-size: text_size;
+							font-weight: 600;
+							text: "\nLists";
+						}
+
+						for now_list_data in FieldAdapter.lists: Button {
+							text: now_list_data.list_name;
+							x: parent.width / 10;
+							width: parent.width * 4 / 5;
+							clicked => {
+								InfoPanelAdapter.list_name = now_list_data.list_name;
+								InfoPanelAdapter.list_roll = FieldAdapter.roll_list_item(now_list_data);
+								InfoPanelAdapter.panel_mode = 4;
 							}
 						}
 					}

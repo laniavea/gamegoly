@@ -3,7 +3,7 @@ use crate::config_player::serialize_player;
 
 use slint::Weak;
 use slint::ComponentHandle;
-pub fn lower_panel_callbacks(window: Weak<AppWindow>){
+pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
     let main_window = window.unwrap();
 
     // +1 turn
@@ -58,8 +58,17 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>){
         //TODO:Handle this error
         serialize_player(field_adapter.get_player_loc_id()).unwrap();
     });
-
 }
+
+pub fn field_callbacks(window: Weak<AppWindow>) {
+    let main_window = window.unwrap();
+
+    // Roll random element from list
+    main_window.global::<FieldAdapter>().on_roll_list_item(move |list_data| {
+        utils::roll_element_from_list(list_data)
+    });
+}
+
 
 fn update_player_pos(field_adapter: FieldAdapter, player_loc: i32) {
     let number_of_tiles = field_adapter.get_number_of_tiles();
