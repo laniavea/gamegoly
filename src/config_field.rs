@@ -1,6 +1,6 @@
 use std::fs;
 
-use crate::{FieldTilesData, DiceRoll, HelpData, ListData};
+use crate::{FieldTilesData, DiceRoll, HelpData, ListData, SpecialDice};
 use crate::utils;
 
 use nanoserde::DeJson;
@@ -15,11 +15,18 @@ struct SerdeTileData {
 }
 
 #[derive(Debug, Clone, DeJson)]
+struct SerdeSpecialDice {
+    state: String,
+    condition_id: i32,
+}
+
+#[derive(Debug, Clone, DeJson)]
 struct SerdeFieldMainData {
     title: String,
     base_dice: String,
     help_text_headers: Vec<String>,
     help_text: Vec<String>,
+    special_dices: Vec<SerdeSpecialDice>,
 }
 
 #[derive(Debug, Clone, DeJson)]
@@ -160,11 +167,21 @@ impl SerdeGameGolyData {
             })
         }
 
+        let mut special_dices: Vec<SpecialDice> = vec![];
+
+        for dice in &main_data.special_dices {
+            special_dices.push(SpecialDice{
+                state: slint::SharedString::from(&dice.state),
+                condition_id: dice.condition_id,
+            });
+        }
+
         Ok(FieldMainDataSlint {
             main_title: slint::SharedString::from(&main_data.title), 
             base_dice: slint::ModelRc::new(slint::VecModel::from(base_dice)),
             help_data: slint::ModelRc::new(slint::VecModel::from(help_data)),
             static_lists: slint::ModelRc::new(slint::VecModel::from(lists)),
+            special_dices: slint::ModelRc::new(slint::VecModel::from(special_dices)),
         })
     }
 }
@@ -204,6 +221,7 @@ pub struct FieldMainDataSlint {
     base_dice: slint::ModelRc<DiceRoll>,
     help_data: slint::ModelRc<HelpData>,
     static_lists: slint::ModelRc<ListData>,
+    special_dices: slint::ModelRc<SpecialDice>,
 }
 
 impl FieldMainDataSlint {
@@ -221,6 +239,10 @@ impl FieldMainDataSlint {
 
     pub fn static_lists(&self) -> slint::ModelRc<ListData> {
         self.static_lists.clone()
+    }
+
+    pub fn special_dices(&self) -> slint::ModelRc<SpecialDice> {
+        self.special_dices.clone()
     }
 }
 

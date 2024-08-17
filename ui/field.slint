@@ -15,6 +15,11 @@ export struct ListData {
 	list_elements: [string],
 }
 
+export struct SpecialDice {
+	state: string,
+	condition_id: int,
+}
+
 export global FieldAdapter {
 	// Tiles info
 	in-out property <[FieldTilesData]> field_top;
@@ -34,6 +39,8 @@ export global FieldAdapter {
 
 	// Statice lists
 	in-out property <[ListData]> lists;
+	in-out property <[SpecialDice]> special_dices;
+	in-out property <[int]> conditions_queue; 
 
 	// Player vars
 	in-out property <int> player_loc_id;

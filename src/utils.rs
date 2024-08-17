@@ -1,7 +1,7 @@
 use rand::Rng;
 use slint::{Model, VecModel};
 
-use crate::{DiceRoll, ListData};
+use crate::{DiceRoll, ListData, SpecialDice};
 use crate::config_field::GameGolyConfigError;
 
 // Returns id of corners for the field
@@ -50,6 +50,19 @@ pub fn dices_from_string(dice_roll_string: &str) -> Result<Vec<DiceRoll>, Box<dy
     }
     Ok(dice_rolls)
 }
+
+// Returns Vec of condition ids if special dice
+pub fn special_dices_check(dice_roll: &[i32], special_dices: slint::ModelRc<SpecialDice>) -> Vec<i32>{
+    let special_dices = special_dices.as_any().downcast_ref::<VecModel<SpecialDice>>().unwrap();
+    let mut condition_ids = vec![];
+
+    for special_dice in special_dices.iter() {
+        let res = special_dice.check_roll(dice_roll);
+        if let Some(condition_id) = res { condition_ids.push(condition_id) };
+    }
+
+    condition_ids
+} 
 
 pub fn roll_dices(dices: slint::ModelRc<DiceRoll>) -> Vec<i32> {
     let dices = dices.as_any().downcast_ref::<VecModel<DiceRoll>>().unwrap();

@@ -24,6 +24,7 @@ pub fn set_field_main_info(window: Weak<AppWindow>, field_main_data: &FieldMainD
     field_adapter.set_base_dice(field_main_data.base_dice());
     field_adapter.set_help_data(field_main_data.help_data());
     field_adapter.set_lists(field_main_data.static_lists());
+    field_adapter.set_special_dices(field_main_data.special_dices());
 }
 
 pub fn set_player(window: Weak<AppWindow>, player_data: &PlayerData) {

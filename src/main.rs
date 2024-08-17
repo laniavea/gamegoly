@@ -3,6 +3,7 @@ mod config_field;
 mod config_player;
 mod slint_setter;
 mod slint_callbacks;
+mod slint_sturcts;
 
 slint::include_modules!();
 

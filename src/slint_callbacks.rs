@@ -1,6 +1,7 @@
 use crate::{AppWindow, FieldAdapter, LowerPanelAdapter, InfoPanelAdapter, utils};
 use crate::config_player::serialize_player;
 
+use slint::{Model, VecModel};
 use slint::Weak;
 use slint::ComponentHandle;
 pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
@@ -12,7 +13,7 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
         let new_main_window = main_window_weak.unwrap();
         let field_adapter = new_main_window.global::<FieldAdapter>();
 
-        update_player_pos(field_adapter, player_loc);
+        update_player_pos(&field_adapter, player_loc);
     });
 
     // Dice roll
@@ -46,7 +47,25 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
 
         let new_player_loc= dices_sum + field_adapter.get_player_loc_id();
 
-        update_player_pos(field_adapter, new_player_loc);
+        update_player_pos(&field_adapter, new_player_loc);
+
+        let special_dices = field_adapter.get_special_dices();
+
+        let condions_ids = utils::special_dices_check(&dices, special_dices);
+        if !condions_ids.is_empty() {
+            field_adapter.set_conditions_queue(slint::ModelRc::new(slint::VecModel::from(condions_ids)));
+        }
+
+        //TODO: TEST, REMOVE THIS 
+        let conditions = field_adapter.get_conditions_queue();
+        match conditions.as_any().downcast_ref::<VecModel<i32>>() {
+            Some(test) => {
+                for testik in test.iter() {
+                    println!("{:?}", testik);
+                }
+            },
+            None => println!("NO CONDITIONs"),
+        }
     });
 
     // Save player state
@@ -70,7 +89,7 @@ pub fn field_callbacks(window: Weak<AppWindow>) {
 }
 
 
-fn update_player_pos(field_adapter: FieldAdapter, player_loc: i32) {
+fn update_player_pos(field_adapter: &FieldAdapter, player_loc: i32) {
     let number_of_tiles = field_adapter.get_number_of_tiles();
     let new_player_loc = player_loc % number_of_tiles;
 
