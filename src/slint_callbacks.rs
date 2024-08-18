@@ -1,7 +1,6 @@
 use crate::{AppWindow, FieldAdapter, LowerPanelAdapter, InfoPanelAdapter, utils};
 use crate::config_player::serialize_player;
 
-use slint::{Model, VecModel};
 use slint::Weak;
 use slint::ComponentHandle;
 pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
@@ -54,17 +53,8 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
         let condions_ids = utils::special_dices_check(&dices, special_dices);
         if !condions_ids.is_empty() {
             field_adapter.set_conditions_queue(slint::ModelRc::new(slint::VecModel::from(condions_ids)));
-        }
-
-        //TODO: TEST, REMOVE THIS 
-        let conditions = field_adapter.get_conditions_queue();
-        match conditions.as_any().downcast_ref::<VecModel<i32>>() {
-            Some(test) => {
-                for testik in test.iter() {
-                    println!("{:?}", testik);
-                }
-            },
-            None => println!("NO CONDITIONs"),
+            let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
+            lower_panel_adapter.set_condition_button(true);
         }
     });
 
@@ -76,6 +66,12 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
 
         //TODO:Handle this error
         serialize_player(field_adapter.get_player_loc_id()).unwrap();
+    });
+
+    let main_window_weak = main_window.as_weak();
+    main_window.global::<LowerPanelAdapter>().on_roll_next_condition(move || {
+        let new_main_window = main_window_weak.unwrap();
+        let _field_adapter = new_main_window.global::<FieldAdapter>();
     });
 }
 

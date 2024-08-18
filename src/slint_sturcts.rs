@@ -1,4 +1,4 @@
-use crate::SpecialDice;
+use crate::{SpecialDice, Condition};
 
 impl SpecialDice {
     pub fn check_roll(&self, dices: &[i32]) -> Option<i32> {
@@ -19,5 +19,11 @@ impl SpecialDice {
         }
 
         None
+    }
+}
+
+impl Condition {
+    pub fn check_condition(&self, orig_condition: String) {
+
     }
 }

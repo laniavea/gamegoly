@@ -5,16 +5,22 @@ use nanoserde::{DeJson, SerJson};
 #[derive(Debug, Clone, DeJson, SerJson)]
 struct SerdePlayerData {
     player_location: i32,
+    player_state: i32,
 }
 
 #[derive(Debug, Clone)]
 pub struct PlayerData {
     pub location: i32,
+    pub state: i32,
 }
 
 impl PlayerData {
     pub fn location(&self) -> i32 {
         self.location
+    }
+
+    pub fn state(&self) -> i32 {
+        self.state
     }
 }
 
@@ -24,12 +30,15 @@ pub fn read_config(file_path: &str) -> Result<PlayerData, Box<dyn std::error::Er
 
     Ok(PlayerData{
         location: player_data.player_location,
+        state: player_data.player_state,
     })
 }
 
 pub fn serialize_player(player_loc: i32) -> Result<(), Box<dyn std::error::Error>> {
+    //TODO: Change player state
     let serde_player_data = SerdePlayerData {
         player_location: player_loc,
+        player_state: 1,
     };
 
     let result = SerJson::serialize_json(&serde_player_data);

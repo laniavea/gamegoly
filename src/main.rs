@@ -33,6 +33,7 @@ fn main() -> Result<(), slint::PlatformError> {
     slint_setter::set_field_main_info(main_window_weak.clone(), &field_main_data);
     slint_setter::set_player(main_window_weak.clone(), &player_data);
     slint_setter::set_info_panel(main_window_weak.clone());
+    slint_setter::set_lower_panel(main_window_weak.clone());
 
     slint_callbacks::lower_panel_callbacks(main_window_weak.clone());
     slint_callbacks::field_callbacks(main_window_weak.clone());

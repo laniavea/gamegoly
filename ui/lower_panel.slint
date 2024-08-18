@@ -3,36 +3,53 @@ import { Button } from "std-widgets.slint";
 import { FieldAdapter } from "./field.slint";
 
 export global LowerPanelAdapter {
+	in-out property <bool> condition_button;
+	
 	callback update_player_state(int);
 	callback roll_dice();
 	callback save_player_state();
+	
+	callback roll_next_condition();
 }
 
 export component LowerPanel inherits Rectangle {
-	background: red;
+	background: gray;
 
-	HorizontalLayout {
-		Button {
-			text: "Click me: " + FieldAdapter.player_loc_id;
-			clicked => {
-				FieldAdapter.player_loc_id += 1;
-				FieldAdapter.player_loc_id = mod(FieldAdapter.player_loc_id, FieldAdapter.number_of_tiles);
-				LowerPanelAdapter.update_player_state(FieldAdapter.player_loc_id);
+	if !LowerPanelAdapter.condition_button:
+		HorizontalLayout {
+			Button {
+				text: "Click me: " + FieldAdapter.player_loc_id;
+				clicked => {
+					FieldAdapter.player_loc_id += 1;
+					FieldAdapter.player_loc_id = mod(FieldAdapter.player_loc_id, FieldAdapter.number_of_tiles);
+					LowerPanelAdapter.update_player_state(FieldAdapter.player_loc_id);
+				}
+			}
+
+			if FieldAdapter.player_state == 1:
+				Button {
+					text: "Roll dice";
+					clicked => {
+						LowerPanelAdapter.roll_dice();
+					}
+				}
+
+			Button {
+				text: "Save";
+				clicked => {
+					LowerPanelAdapter.save_player_state();
+				}
 			}
 		}
-
-		Button {
-			text: "Roll dice";
-			clicked => {
-				LowerPanelAdapter.roll_dice();
+	
+	if LowerPanelAdapter.condition_button:
+		HorizontalLayout {
+			Button {
+				text: "Roll next condition";
+				clicked => {
+					LowerPanelAdapter.roll_next_condition();
+				}
 			}
 		}
-
-		Button {
-			text: "Save";
-			clicked => {
-				LowerPanelAdapter.save_player_state();
-			}
-		}
-	}
+	
 }

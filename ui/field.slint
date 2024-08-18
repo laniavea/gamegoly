@@ -20,6 +20,11 @@ export struct SpecialDice {
 	condition_id: int,
 }
 
+export struct Condition {
+	condition_id: int,
+	rule: string,
+}
+
 export global FieldAdapter {
 	// Tiles info
 	in-out property <[FieldTilesData]> field_top;
@@ -38,11 +43,14 @@ export global FieldAdapter {
 	in-out property <[DiceRoll]> base_dice;
 
 	// Statice lists
+
+	in-out property <[Condition]> conditions;
 	in-out property <[ListData]> lists;
 	in-out property <[SpecialDice]> special_dices;
-	in-out property <[int]> conditions_queue; 
 
 	// Player vars
+	in-out property <[int]> conditions_queue; 
+	in-out property <int> player_state;
 	in-out property <int> player_loc_id;
 	in-out property <bool> player_on_hor;
 	in-out property <bool> player_on_ver;
