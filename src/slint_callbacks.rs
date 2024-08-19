@@ -1,8 +1,10 @@
-use crate::{AppWindow, FieldAdapter, LowerPanelAdapter, InfoPanelAdapter, utils};
+use crate::{AppWindow, FieldAdapter, LowerPanelAdapter, InfoPanelAdapter, utils, Condition};
 use crate::config_player::serialize_player;
 
+use slint::{Model, VecModel};
 use slint::Weak;
 use slint::ComponentHandle;
+
 pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
     let main_window = window.unwrap();
 
@@ -68,10 +70,38 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
         serialize_player(field_adapter.get_player_loc_id()).unwrap();
     });
 
+    // Call condition button
     let main_window_weak = main_window.as_weak();
     main_window.global::<LowerPanelAdapter>().on_roll_next_condition(move || {
         let new_main_window = main_window_weak.unwrap();
-        let _field_adapter = new_main_window.global::<FieldAdapter>();
+        let field_adapter = new_main_window.global::<FieldAdapter>();
+
+        let condition_offset: i32 = field_adapter.get_conditions_offset();
+        let conditions_queue = field_adapter.get_conditions_queue();
+        let conditions_queue = conditions_queue.as_any().downcast_ref::<VecModel<i32>>().unwrap();
+        let conditions = field_adapter.get_conditions();
+        let conditions = conditions.as_any().downcast_ref::<VecModel<Condition>>().unwrap();
+
+        let now_codition_id = conditions_queue.row_data(condition_offset as usize).unwrap();
+        for condition in conditions.iter() {
+            if condition.id() == now_codition_id {
+                let info_panel_adapter = new_main_window.global::<InfoPanelAdapter>();
+                condition.call_condition(field_adapter, info_panel_adapter);
+                break;
+            }
+        }
+
+        let field_adapter = new_main_window.global::<FieldAdapter>();
+        let conditions_queue = field_adapter.get_conditions_queue();
+
+        if condition_offset + 1 != conditions_queue.row_count() as i32 {
+            field_adapter.set_conditions_offset(now_codition_id + 1);
+        } else {
+            field_adapter.set_conditions_offset(0);
+            field_adapter.set_conditions_queue(slint::ModelRc::new(slint::VecModel::from(vec![])));
+            let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
+            lower_panel_adapter.set_condition_button(false);
+        }
     });
 }
 
