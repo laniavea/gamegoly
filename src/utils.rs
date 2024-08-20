@@ -64,6 +64,22 @@ pub fn special_dices_check(dice_roll: &[i32], special_dices: slint::ModelRc<Spec
     condition_ids
 } 
 
+pub fn combine_strings(input_strings: slint::ModelRc<slint::SharedString>) -> slint::SharedString {
+    let input_strings = input_strings.as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap();
+
+    let mut result_string: String = String::from("");
+
+    for now_string in input_strings.iter() {
+        result_string.push_str(&format!("{}, ", &now_string))
+    }
+
+    if !result_string.is_empty() {
+        result_string = result_string[..result_string.len()-2].to_string()
+    }
+
+    slint::SharedString::from(&result_string)
+}
+
 pub fn roll_dices(dices: slint::ModelRc<DiceRoll>) -> Vec<i32> {
     let dices = dices.as_any().downcast_ref::<VecModel<DiceRoll>>().unwrap();
     let mut dice_rolls = Vec::with_capacity(dices.row_count());

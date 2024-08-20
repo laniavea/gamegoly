@@ -4,6 +4,12 @@ import { FieldAdapter } from "./field.slint";
 
 export global LowerPanelAdapter {
 	in-out property <bool> condition_button;
+
+	in-out property <int> player_status;
+	in-out property <[string]> player_special;
+	in-out property <[string]> player_add_tags;
+	in-out property <string> combined_specials;
+	in-out property <string> combined_add_tags;
 	
 	callback update_player_state(int);
 	callback roll_dice();
@@ -26,7 +32,22 @@ export component LowerPanel inherits Rectangle {
 				}
 			}
 
-			if FieldAdapter.player_state == 1:
+			Rectangle {
+				background: gray;
+				VerticalLayout {
+					Text {
+						text: "Player status: " + LowerPanelAdapter.player_status;
+					}
+					Text {
+						text: "Additional tags: " + LowerPanelAdapter.combined_add_tags;
+					}
+					Text {
+						text: "Specials: " + LowerPanelAdapter.combined_specials;
+					}
+				}
+			}
+
+			if LowerPanelAdapter.player_status == 1:
 				Button {
 					text: "Roll dice";
 					clicked => {
@@ -51,5 +72,5 @@ export component LowerPanel inherits Rectangle {
 				}
 			}
 		}
-	
 }
+

@@ -1,6 +1,6 @@
 use crate::{AppWindow, FieldAdapter, InfoPanelAdapter, LowerPanelAdapter, utils};
 use crate::config_field::{FieldTilesDataSlint, FieldMainDataSlint};
-use crate::config_player::PlayerData;
+use crate::config_player::PlayerDataSlint;
 
 use slint::Weak;
 use slint::ComponentHandle;
@@ -28,18 +28,24 @@ pub fn set_field_main_info(window: Weak<AppWindow>, field_main_data: &FieldMainD
     field_adapter.set_special_dices(field_main_data.special_dices());
 }
 
-pub fn set_player(window: Weak<AppWindow>, player_data: &PlayerData) {
+pub fn set_player(window: Weak<AppWindow>, player_data: &PlayerDataSlint) {
     let main_window = window.unwrap();
     let field_adapter = main_window.global::<FieldAdapter>();
+    let lower_panel_adapter = main_window.global::<LowerPanelAdapter>();
 
     field_adapter.set_player_loc_id(player_data.location());
-    field_adapter.set_player_state(player_data.state());
+    lower_panel_adapter.set_player_status(player_data.state());
+
+    lower_panel_adapter.set_player_special(player_data.specials());
+    lower_panel_adapter.set_player_add_tags(player_data.add_tags());
 
     let (ver_state, hor_state) = utils::get_ver_hor_state(player_data.location(), field_adapter.get_number_of_tiles());
 
     field_adapter.set_player_on_ver(ver_state);
     field_adapter.set_player_on_hor(hor_state);
 
+    lower_panel_adapter.set_combined_specials(utils::combine_strings(lower_panel_adapter.get_player_special()));
+    lower_panel_adapter.set_combined_add_tags(utils::combine_strings(lower_panel_adapter.get_player_add_tags()));
 } 
 
 pub fn set_info_panel(window: Weak<AppWindow>) {

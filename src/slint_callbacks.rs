@@ -65,9 +65,15 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
     main_window.global::<LowerPanelAdapter>().on_save_player_state(move || {
         let new_main_window = main_window_weak.unwrap();
         let field_adapter = new_main_window.global::<FieldAdapter>();
+        let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
 
-        //TODO:Handle this error
-        serialize_player(field_adapter.get_player_loc_id()).unwrap();
+        match serialize_player(field_adapter.get_player_loc_id(), lower_panel_adapter) {
+            Ok(_) => (),
+            Err(err) => {
+                eprintln!("{}", err);
+            }
+        }
+
     });
 
     // Call condition button
