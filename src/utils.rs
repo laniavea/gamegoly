@@ -1,7 +1,7 @@
 use rand::Rng;
 use slint::{Model, VecModel};
 
-use crate::{DiceRoll, ListData, SpecialDice};
+use crate::{DiceRoll, SpecialDice};
 use crate::config_field::GameGolyConfigError;
 
 // Returns id of corners for the field
@@ -90,15 +90,4 @@ pub fn roll_dices(dices: slint::ModelRc<DiceRoll>) -> Vec<i32> {
     }
 
     dice_rolls
-}
-
-pub fn roll_element_from_list(list: ListData) -> slint::SharedString {
-    let elements_count = list.list_elements.row_count();
-
-    let mut rng = rand::thread_rng();
-    let rolled_element = rng.gen_range(0..elements_count);
-
-    let all_rolls = list.list_elements.as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap();
-
-    all_rolls.row_data(rolled_element).unwrap().clone()
 }

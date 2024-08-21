@@ -101,7 +101,7 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
         let conditions_queue = field_adapter.get_conditions_queue();
 
         if condition_offset + 1 != conditions_queue.row_count() as i32 {
-            field_adapter.set_conditions_offset(now_codition_id + 1);
+            field_adapter.set_conditions_offset(condition_offset + 1);
         } else {
             field_adapter.set_conditions_offset(0);
             field_adapter.set_conditions_queue(slint::ModelRc::new(slint::VecModel::from(vec![])));
@@ -116,7 +116,7 @@ pub fn field_callbacks(window: Weak<AppWindow>) {
 
     // Roll random element from list
     main_window.global::<FieldAdapter>().on_roll_list_item(move |list_data| {
-        utils::roll_element_from_list(list_data)
+        list_data.make_roll()
     });
 }
 

@@ -34,6 +34,8 @@ pub fn set_player(window: Weak<AppWindow>, player_data: &PlayerDataSlint) {
     let lower_panel_adapter = main_window.global::<LowerPanelAdapter>();
 
     field_adapter.set_player_loc_id(player_data.location());
+    field_adapter.set_player_drops(player_data.drops());
+    field_adapter.set_player_half_moves(player_data.half_moves());
     lower_panel_adapter.set_player_status(player_data.state());
 
     lower_panel_adapter.set_player_special(player_data.specials());

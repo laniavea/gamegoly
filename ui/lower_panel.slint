@@ -20,6 +20,7 @@ export global LowerPanelAdapter {
 
 export component LowerPanel inherits Rectangle {
 	background: gray;
+	in property <length> panel_size;
 
 	if !LowerPanelAdapter.condition_button:
 		HorizontalLayout {
@@ -35,14 +36,33 @@ export component LowerPanel inherits Rectangle {
 			Rectangle {
 				background: gray;
 				VerticalLayout {
+					alignment: space-around;
 					Text {
 						text: "Player status: " + LowerPanelAdapter.player_status;
+						color: black;
+						vertical-alignment: center;
+						font-size: panel_size / 6;
+						font-weight: 500;
+						wrap: word-wrap;
+						overflow: elide;
 					}
 					Text {
 						text: "Additional tags: " + LowerPanelAdapter.combined_add_tags;
+						color: black;
+						vertical-alignment: center;
+						font-size: panel_size / 6;
+						font-weight: 500;
+						wrap: word-wrap;
+						overflow: elide;
 					}
 					Text {
 						text: "Specials: " + LowerPanelAdapter.combined_specials;
+						color: black;
+						vertical-alignment: center;
+						font-size: panel_size / 6;
+						font-weight: 500;
+						wrap: word-wrap;
+						overflow: elide;
 					}
 				}
 			}

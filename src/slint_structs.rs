@@ -36,9 +36,64 @@ impl SpecialDice {
                 }
                 pr_elem = *dice;
             }
-
             return Some(self.condition_id);
+
+        } else if self.state.starts_with("sum(") {
+            if self.state.chars().nth(4).unwrap() == '<' {
+                let possible_sum :i32 = self.state[5..self.state.len() - 1].parse().unwrap();
+
+                if dices.iter().sum::<i32>() < possible_sum {
+                    return Some(self.condition_id)
+                }
+            } else if self.state.chars().nth(4).unwrap() == '>' {
+                let possible_sum :i32 = self.state[5..self.state.len() - 1].parse().unwrap();
+
+                if dices.iter().sum::<i32>() > possible_sum {
+                  return Some(self.condition_id)
+                }
+            } else {
+                let possible_sum :i32 = self.state[4..self.state.len() - 1].parse().unwrap();
+
+                if dices.iter().sum::<i32>() == possible_sum {
+                    return Some(self.condition_id)
+                }
+            }
+
+        } else if self.state.starts_with("diff(") {
+            if dices.len() < 2 {
+                return None;
+            }
+
+            if self.state.chars().nth(5).unwrap() == '<' {
+                let possible_diff :i32 = self.state[6..self.state.len() - 1].parse().unwrap();
+
+                let min_elem = dices.iter().min().unwrap();
+                let max_elem = dices.iter().max().unwrap();
+
+                if *max_elem - *min_elem < possible_diff {
+                    return Some(self.condition_id)
+                }
+            } else if self.state.chars().nth(5).unwrap() == '>' {
+                let possible_diff :i32 = self.state[6..self.state.len() - 1].parse().unwrap();
+
+                let min_elem = dices.iter().min().unwrap();
+                let max_elem = dices.iter().max().unwrap();
+
+                if *max_elem - *min_elem > possible_diff {
+                    return Some(self.condition_id)
+                }
+            } else {
+                let possible_diff :i32 = self.state[5..self.state.len() - 1].parse().unwrap();
+
+                let min_elem = dices.iter().min().unwrap();
+                let max_elem = dices.iter().max().unwrap();
+
+                if *max_elem - *min_elem == possible_diff {
+                    return Some(self.condition_id)
+                }
+            }
         }
+
         None
     }
 }

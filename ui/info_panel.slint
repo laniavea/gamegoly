@@ -20,7 +20,8 @@ export global InfoPanelAdapter {
 // Only states to operate properties inside element and if else if during callback call
 
 export component InfoPanel inherits Rectangle {
-	in property <length> normal_text_size; in property <length> panel_minimal_side;
+	in property <length> normal_text_size;
+	in property <length> panel_minimal_side;
 
 	if InfoPanelAdapter.panel_mode == 1:
 		Rectangle {
