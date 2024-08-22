@@ -153,12 +153,34 @@ export component Field inherits Rectangle {
 					Rectangle {
 						preferred-height: (now_height - 2 * tiles_size_height) / 2;
 						background: gray;
-						Text {
-							text: FieldAdapter.main_info_title;
-							vertical-alignment: center;
-							horizontal-alignment: center;
-							font-weight: 600;
-							font-size: minimal_side / 15;
+						VerticalLayout {
+							alignment: space-around;
+							Text {
+								text: FieldAdapter.main_info_title;
+								vertical-alignment: center;
+								horizontal-alignment: center;
+								font-weight: 600;
+								font-size: minimal_side / 15;
+							}
+
+							HorizontalLayout {
+								alignment: space-around;
+								Text {
+									text: "Drops: " + FieldAdapter.player_drops;
+									vertical-alignment: center;
+									horizontal-alignment: center;
+									font-weight: 600;
+									font-size: minimal_side / 30;
+								}
+
+								Text {
+									text: "Half-Moves: " + FieldAdapter.player_half_moves;
+									vertical-alignment: center;
+									horizontal-alignment: center;
+									font-weight: 600;
+									font-size: minimal_side / 30;
+								}
+							}
 						}
 					}
 
@@ -166,7 +188,6 @@ export component Field inherits Rectangle {
 						panel_minimal_side: min(parent.width, parent.height);
 						normal_text_size: text_size;
 						preferred-height: (now_height - 2 * tiles_size_height) / 2;
-
 					}
 				}
 				Rectangle {

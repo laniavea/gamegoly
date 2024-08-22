@@ -113,6 +113,62 @@ impl Condition {
                     info_panel_adapter.set_panel_mode(4)
                 }
             }
+
+        } else if self.rule.starts_with("cond(") {
+            let list_of_conds: Vec<i32> = self.rule[5..self.rule.len()-1].split(',')
+                .map(|now_value| now_value.parse().unwrap()).collect();
+
+            for now_cond in &list_of_conds {
+                field_adapter.get_conditions_queue().as_any().downcast_ref::<VecModel<i32>>().unwrap().push(*now_cond);
+            }
+
+            info_panel_adapter.set_any_header(slint::SharedString::from("New events"));
+            info_panel_adapter.set_any_text(slint::SharedString::from(format!("Added {} new events", list_of_conds.len())));
+            info_panel_adapter.set_panel_mode(3)
+
+        } else if self.rule.starts_with("ch_val(") {
+            let data: Vec<&str> = self.rule[7..self.rule.len() - 1].split(',').collect();
+            if data.len() == 2 {
+                let val_name_to_change = data[0];
+                let change_type = data[1].chars().nth(0).unwrap();
+                let change_num: &str = &data[1][1..];
+
+                let mut value_to_change: i32 = match val_name_to_change {
+                    "drops" => field_adapter.get_player_drops(),
+                    "half-moves" => field_adapter.get_player_half_moves(),
+                    _ => {
+                        eprintln!("Value to change must be drops or half-moves");
+                        return
+                    }
+                };
+
+                match change_type {
+                    '+' => {
+                        value_to_change += change_num.parse::<i32>().unwrap()
+                    }
+                    '-' => {
+                        value_to_change -= change_num.parse::<i32>().unwrap()
+                    }
+                    '=' => {
+                        value_to_change = change_num.parse().unwrap()
+                    }
+                    _ => {
+                        eprintln!("Write ch_val as ch_val(var_to_change,[+-=]any_num)");
+                        return
+                    }
+                }
+
+                match val_name_to_change {
+                    "drops" => field_adapter.set_player_drops(value_to_change),
+                    "half-moves" => field_adapter.set_player_half_moves(value_to_change),
+                    _ => {
+                        unreachable!();
+                    }
+                };
+                info_panel_adapter.set_any_header(slint::SharedString::from("Some stat was edited"));
+                info_panel_adapter.set_any_text(slint::SharedString::from(format!("{val_name_to_change}: {}", data[1])));
+                info_panel_adapter.set_panel_mode(3)
+            }
         }
     }
 
