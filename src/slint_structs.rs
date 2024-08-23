@@ -1,7 +1,8 @@
 use rand::Rng;
 use slint::{Model, VecModel};
 
-use crate::{FieldAdapter, InfoPanelAdapter, SpecialDice, Condition, ListData};
+use crate::utils;
+use crate::{FieldAdapter, InfoPanelAdapter, LowerPanelAdapter, SpecialDice, Condition, ListData};
 
 impl ListData {
     pub fn make_roll(&self) -> slint::SharedString {
@@ -99,7 +100,11 @@ impl SpecialDice {
 }
 
 impl Condition {
-    pub fn call_condition(&self, field_adapter: FieldAdapter, info_panel_adapter: InfoPanelAdapter) {
+    pub fn call_condition(&self,
+        field_adapter: &FieldAdapter,
+        info_panel_adapter: &InfoPanelAdapter,
+        lower_panel_adapter: &LowerPanelAdapter
+    ) {
         if self.rule.starts_with("list(") {
             let list_to_roll = &self.rule[5..(self.rule.len() - 1)];
 
@@ -109,8 +114,23 @@ impl Condition {
                 let res = list.check_name_and_roll(&list_name);
                 if let Some(rolled_value) = res {
                     info_panel_adapter.set_list_name(list_name);
-                    info_panel_adapter.set_list_roll(rolled_value);
-                    info_panel_adapter.set_panel_mode(4)
+                    info_panel_adapter.set_list_roll(rolled_value.clone());
+                    info_panel_adapter.set_panel_mode(4);
+
+                    match list_to_roll {
+                        "Дополнительный тег" => {
+                            let add_tags = lower_panel_adapter.get_player_add_tags();
+                            add_tags.as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap().push(rolled_value);
+                            lower_panel_adapter.set_combined_add_tags(utils::combine_strings(lower_panel_adapter.get_player_add_tags()));
+                        },
+                        "Спешл" => {
+                            let specials = lower_panel_adapter.get_player_special();
+                            specials.as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap().push(rolled_value);
+                            lower_panel_adapter.set_combined_specials(utils::combine_strings(lower_panel_adapter.get_player_special()));
+                        },
+                        _ => ()
+                    }
+                    break;
                 }
             }
 

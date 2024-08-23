@@ -16,6 +16,7 @@ export global LowerPanelAdapter {
 	callback save_player_state();
 	
 	callback roll_next_condition();
+	callback roll_tag();
 }
 
 export component LowerPanel inherits Rectangle {
@@ -72,6 +73,14 @@ export component LowerPanel inherits Rectangle {
 					text: "Roll dice";
 					clicked => {
 						LowerPanelAdapter.roll_dice();
+					}
+				}
+
+			if LowerPanelAdapter.player_status == 2:
+				Button {
+					text: "Roll main tag";
+					clicked => {
+						LowerPanelAdapter.roll_tag();
 					}
 				}
 

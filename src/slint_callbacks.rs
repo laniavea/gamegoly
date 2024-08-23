@@ -12,17 +12,21 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
     let main_window_weak = main_window.as_weak();
     main_window.global::<LowerPanelAdapter>().on_update_player_state(move |player_loc| {
         let new_main_window = main_window_weak.unwrap();
+        let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
         let field_adapter = new_main_window.global::<FieldAdapter>();
 
         update_player_pos(&field_adapter, player_loc);
+        lower_panel_adapter.set_player_status(2);
     });
 
     // Dice roll
     let main_window_weak = main_window.as_weak();
     main_window.global::<LowerPanelAdapter>().on_roll_dice(move || {
         let new_main_window = main_window_weak.unwrap();
+
         let field_adapter = new_main_window.global::<FieldAdapter>();
         let info_panel_adapter = new_main_window.global::<InfoPanelAdapter>();
+        let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
 
         let dices = utils::roll_dices(field_adapter.get_base_dice());
 
@@ -46,8 +50,7 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
         info_panel_adapter.set_dices(slint::ModelRc::new(slint::VecModel::from(dices.clone())));
         info_panel_adapter.set_panel_mode(2);
 
-        let new_player_loc= dices_sum + field_adapter.get_player_loc_id();
-
+        let new_player_loc = dices_sum + field_adapter.get_player_loc_id();
         update_player_pos(&field_adapter, new_player_loc);
 
         let special_dices = field_adapter.get_special_dices();
@@ -58,6 +61,8 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
             let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
             lower_panel_adapter.set_condition_button(true);
         }
+
+        lower_panel_adapter.set_player_status(2);
     });
 
     // Save player state
@@ -92,12 +97,12 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
         for condition in conditions.iter() {
             if condition.id() == now_codition_id {
                 let info_panel_adapter = new_main_window.global::<InfoPanelAdapter>();
-                condition.call_condition(field_adapter, info_panel_adapter);
+                let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
+                condition.call_condition(&field_adapter, &info_panel_adapter, &lower_panel_adapter);
                 break;
             }
         }
 
-        let field_adapter = new_main_window.global::<FieldAdapter>();
         let conditions_queue = field_adapter.get_conditions_queue();
 
         if condition_offset + 1 != conditions_queue.row_count() as i32 {
@@ -108,6 +113,23 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
             let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
             lower_panel_adapter.set_condition_button(false);
         }
+    });
+
+    // Roll tag button
+    let main_window_weak = main_window.as_weak();
+    main_window.global::<LowerPanelAdapter>().on_roll_tag(move || {
+        let new_main_window = main_window_weak.unwrap();
+        let field_adapter = new_main_window.global::<FieldAdapter>();
+        let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
+
+        let player_loc = field_adapter.get_player_loc_id() as usize;
+
+        let cond_id = utils::get_cond_from_tile(player_loc, &field_adapter);
+
+        field_adapter.set_conditions_queue(slint::ModelRc::new(slint::VecModel::from(vec![cond_id])));
+        lower_panel_adapter.set_condition_button(true);
+
+        lower_panel_adapter.set_player_status(1);
     });
 }
 

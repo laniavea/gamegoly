@@ -1,7 +1,8 @@
 use rand::Rng;
 use slint::{Model, VecModel};
 
-use crate::{DiceRoll, SpecialDice};
+use crate::FieldAdapter;
+use crate::{DiceRoll, SpecialDice, FieldTilesData};
 use crate::config_field::GameGolyConfigError;
 
 // Returns id of corners for the field
@@ -64,22 +65,26 @@ pub fn special_dices_check(dice_roll: &[i32], special_dices: slint::ModelRc<Spec
     condition_ids
 } 
 
+// Function to generate concatinated string to show it in status
 pub fn combine_strings(input_strings: slint::ModelRc<slint::SharedString>) -> slint::SharedString {
     let input_strings = input_strings.as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap();
 
     let mut result_string: String = String::from("");
 
     for now_string in input_strings.iter() {
-        result_string.push_str(&format!("{}, ", &now_string))
+        result_string.push_str(&format!("{}, ", &now_string));
     }
 
     if !result_string.is_empty() {
-        result_string = result_string[..result_string.len()-2].to_string()
+        result_string = result_string[..result_string.len()-2].to_string();
+    } else {
+        result_string.push_str("None");
     }
 
     slint::SharedString::from(&result_string)
 }
 
+// Dice roll
 pub fn roll_dices(dices: slint::ModelRc<DiceRoll>) -> Vec<i32> {
     let dices = dices.as_any().downcast_ref::<VecModel<DiceRoll>>().unwrap();
     let mut dice_rolls = Vec::with_capacity(dices.row_count());
@@ -90,4 +95,27 @@ pub fn roll_dices(dices: slint::ModelRc<DiceRoll>) -> Vec<i32> {
     }
 
     dice_rolls
+}
+
+pub fn get_cond_from_tile(tile_num: usize, field_adapter: &FieldAdapter) -> i32 {
+    let number_of_tiles = field_adapter.get_number_of_tiles() as usize;
+    let (ul, ur, dr) = get_corners(number_of_tiles);
+
+    if tile_num <= ul {
+        let now_tiles = field_adapter.get_field_left();
+        let now_tiles = now_tiles.as_any().downcast_ref::<VecModel<FieldTilesData>>().unwrap();
+        now_tiles.row_data(ul - tile_num).unwrap().condition_id
+    } else if tile_num < ur {
+        let now_tiles = field_adapter.get_field_top();
+        let now_tiles = now_tiles.as_any().downcast_ref::<VecModel<FieldTilesData>>().unwrap();
+        now_tiles.row_data(tile_num - ul - 1).unwrap().condition_id
+    } else if tile_num <= dr {
+        let now_tiles = field_adapter.get_field_right();
+        let now_tiles = now_tiles.as_any().downcast_ref::<VecModel<FieldTilesData>>().unwrap();
+        now_tiles.row_data(tile_num - ur).unwrap().condition_id
+    } else {
+        let now_tiles = field_adapter.get_field_bottom();
+        let now_tiles = now_tiles.as_any().downcast_ref::<VecModel<FieldTilesData>>().unwrap();
+        now_tiles.row_data(number_of_tiles - tile_num - 1).unwrap().condition_id
+    }
 }
