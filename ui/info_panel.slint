@@ -1,3 +1,4 @@
+import { LineEdit, Button } from "std-widgets.slint";
 import { FieldTilesData } from "./field_data.slint";
 
 export global InfoPanelAdapter {
@@ -14,6 +15,9 @@ export global InfoPanelAdapter {
 
 	in-out property <string> list_name;
 	in-out property <string> list_roll;
+
+	in-out property <[string]> rules_roll_list;
+	in-out property <[string]> input_rules_roll_list;
 }
 
 //NOTE: I couldn't find smth simular to case which operates elements.
@@ -23,6 +27,7 @@ export component InfoPanel inherits Rectangle {
 	in property <length> normal_text_size;
 	in property <length> panel_minimal_side;
 
+	// Shows tile info
 	if InfoPanelAdapter.panel_mode == 1:
 		Rectangle {
 			background: InfoPanelAdapter.tile_data.fill-color;
@@ -60,6 +65,7 @@ export component InfoPanel inherits Rectangle {
 			}
 		}
 
+	// Shows dices
 	if InfoPanelAdapter.panel_mode == 2:
 		Rectangle {
 			background: gray;
@@ -85,6 +91,7 @@ export component InfoPanel inherits Rectangle {
 			}
 		}
 
+	// Shows any text with header
 	if InfoPanelAdapter.panel_mode == 3:
 		Rectangle {
 			background: gray;
@@ -113,6 +120,7 @@ export component InfoPanel inherits Rectangle {
 			}
 		}
 
+	// Shows list rolls
 	if InfoPanelAdapter.panel_mode == 4:
 		Rectangle {
 			background: gray;
@@ -152,10 +160,44 @@ export component InfoPanel inherits Rectangle {
 			}
 
 		}
+
+	// Shows rand by tags
+	if InfoPanelAdapter.panel_mode == 5:
+		Rectangle {
+			background: gray;
+			VerticalLayout {
+				alignment: center;
+				spacing: normal_text_size * 2;
+
+				HorizontalLayout {
+					alignment: space-around;
+					for now_rule in InfoPanelAdapter.rules_roll_list: Text {
+						horizontal-alignment: center;
+						text: now-rule;
+					}
+				}
+
+				HorizontalLayout {
+					alignment: space-around;
+					for now_rule[i] in InfoPanelAdapter.rules_roll_list: LineEdit {
+						width: normal_text_size * 5;
+						horizontal-alignment: center;
+						edited(text) => {
+							InfoPanelAdapter.input_rules_roll_list[i] = text;
+						}
+					}
+				}
+
+				Button {
+					text: "Roll tag";
+					max-height: normal_text_size;
+				}
+			}
+		}
 		
 
 	//TODO: Remove test panel, change startup panel to tile where player now is.
-	if InfoPanelAdapter.panel_mode == 5:
+	if InfoPanelAdapter.panel_mode == 6:
 		Rectangle {
 			background: gray;
 			Text {

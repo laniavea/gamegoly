@@ -97,25 +97,25 @@ pub fn roll_dices(dices: slint::ModelRc<DiceRoll>) -> Vec<i32> {
     dice_rolls
 }
 
-pub fn get_cond_from_tile(tile_num: usize, field_adapter: &FieldAdapter) -> i32 {
+pub fn get_tile_data_from_tile_id(tile_num: usize, field_adapter: &FieldAdapter) -> FieldTilesData {
     let number_of_tiles = field_adapter.get_number_of_tiles() as usize;
     let (ul, ur, dr) = get_corners(number_of_tiles);
 
     if tile_num <= ul {
         let now_tiles = field_adapter.get_field_left();
         let now_tiles = now_tiles.as_any().downcast_ref::<VecModel<FieldTilesData>>().unwrap();
-        now_tiles.row_data(ul - tile_num).unwrap().condition_id
+        now_tiles.row_data(ul - tile_num).unwrap()
     } else if tile_num < ur {
         let now_tiles = field_adapter.get_field_top();
         let now_tiles = now_tiles.as_any().downcast_ref::<VecModel<FieldTilesData>>().unwrap();
-        now_tiles.row_data(tile_num - ul - 1).unwrap().condition_id
+        now_tiles.row_data(tile_num - ul - 1).unwrap()
     } else if tile_num <= dr {
         let now_tiles = field_adapter.get_field_right();
         let now_tiles = now_tiles.as_any().downcast_ref::<VecModel<FieldTilesData>>().unwrap();
-        now_tiles.row_data(tile_num - ur).unwrap().condition_id
+        now_tiles.row_data(tile_num - ur).unwrap()
     } else {
         let now_tiles = field_adapter.get_field_bottom();
         let now_tiles = now_tiles.as_any().downcast_ref::<VecModel<FieldTilesData>>().unwrap();
-        now_tiles.row_data(number_of_tiles - tile_num - 1).unwrap().condition_id
+        now_tiles.row_data(number_of_tiles - tile_num - 1).unwrap()
     }
 }

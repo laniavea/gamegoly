@@ -1,8 +1,10 @@
-use crate::{AppWindow, FieldAdapter, LowerPanelAdapter, InfoPanelAdapter, utils, Condition};
+use crate::utils;
 use crate::config_player::serialize_player;
+use crate::{AppWindow, Condition, FieldTilesData};
+use crate::{FieldAdapter, LowerPanelAdapter, InfoPanelAdapter};
 
-use slint::{Model, VecModel};
 use slint::Weak;
+use slint::{Model, VecModel};
 use slint::ComponentHandle;
 
 pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
@@ -124,9 +126,9 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
 
         let player_loc = field_adapter.get_player_loc_id() as usize;
 
-        let cond_id = utils::get_cond_from_tile(player_loc, &field_adapter);
+        let cond: FieldTilesData = utils::get_tile_data_from_tile_id(player_loc, &field_adapter);
 
-        field_adapter.set_conditions_queue(slint::ModelRc::new(slint::VecModel::from(vec![cond_id])));
+        field_adapter.set_conditions_queue(slint::ModelRc::new(slint::VecModel::from(vec![cond.condition_id])));
         lower_panel_adapter.set_condition_button(true);
 
         lower_panel_adapter.set_player_status(1);
@@ -141,7 +143,6 @@ pub fn field_callbacks(window: Weak<AppWindow>) {
         list_data.make_roll()
     });
 }
-
 
 fn update_player_pos(field_adapter: &FieldAdapter, player_loc: i32) {
     let number_of_tiles = field_adapter.get_number_of_tiles();

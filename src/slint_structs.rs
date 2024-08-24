@@ -189,6 +189,29 @@ impl Condition {
                 info_panel_adapter.set_any_text(slint::SharedString::from(format!("{val_name_to_change}: {}", data[1])));
                 info_panel_adapter.set_panel_mode(3)
             }
+        } else if self.rule.starts_with("rand_by(") {
+            let elements_to_search: &str = &self.rule[8..self.rule.len() - 1];
+
+            let player_loc = field_adapter.get_player_loc_id() as usize;
+            let now_cond = utils::get_tile_data_from_tile_id(player_loc, field_adapter);
+
+            let mut now_elements: Vec<slint::SharedString> = vec![];
+
+            for rule in now_cond.rules.iter() {
+                if let Some(now_rule) = rule.strip_prefix(elements_to_search) {
+                    for elem in now_rule.split(",").map(|el| el.trim()) {
+                        now_elements.push(slint::SharedString::from(elem));
+                    }
+                }
+
+            }
+
+            if now_elements.is_empty() {
+                now_elements.push(slint::SharedString::from("Nothing"));
+            }
+
+            info_panel_adapter.set_rules_roll_list(slint::ModelRc::new(slint::VecModel::from(now_elements)));
+            info_panel_adapter.set_panel_mode(5);
         }
     }
 
