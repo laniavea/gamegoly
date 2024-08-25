@@ -37,6 +37,7 @@ pub fn set_player(window: Weak<AppWindow>, player_data: &PlayerDataSlint) {
     field_adapter.set_player_drops(player_data.drops());
     field_adapter.set_player_half_moves(player_data.half_moves());
     lower_panel_adapter.set_player_status(player_data.state());
+    lower_panel_adapter.set_player_main_tag(player_data.main_tag());
 
     lower_panel_adapter.set_player_special(player_data.specials());
     lower_panel_adapter.set_player_add_tags(player_data.add_tags());

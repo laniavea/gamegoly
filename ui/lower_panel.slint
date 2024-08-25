@@ -6,6 +6,7 @@ export global LowerPanelAdapter {
 	in-out property <bool> condition_button;
 
 	in-out property <int> player_status;
+	in-out property <string> player_main_tag;
 	in-out property <[string]> player_special;
 	in-out property <[string]> player_add_tags;
 	in-out property <string> combined_specials;
@@ -39,7 +40,7 @@ export component LowerPanel inherits Rectangle {
 				VerticalLayout {
 					alignment: space-around;
 					Text {
-						text: "Player status: " + LowerPanelAdapter.player_status;
+						text: "Player status: " + LowerPanelAdapter.player_status + "; Main tag: " + LowerPanelAdapter.player_main_tag;
 						color: black;
 						vertical-alignment: center;
 						font-size: panel_size / 6;
@@ -79,6 +80,14 @@ export component LowerPanel inherits Rectangle {
 			if LowerPanelAdapter.player_status == 2:
 				Button {
 					text: "Roll main tag";
+					clicked => {
+						LowerPanelAdapter.roll_tag();
+					}
+				}
+
+			if LowerPanelAdapter.player_status == 3:
+				Button {
+					text: "Roll game";
 					clicked => {
 						LowerPanelAdapter.roll_tag();
 					}

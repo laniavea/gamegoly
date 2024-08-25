@@ -144,6 +144,45 @@ pub fn field_callbacks(window: Weak<AppWindow>) {
     });
 }
 
+pub fn info_panel_callbacks(window: Weak<AppWindow>) {
+    let main_window = window.unwrap();
+
+    // Roll random main tag
+    let main_window_weak = main_window.as_weak();
+    main_window.global::<InfoPanelAdapter>().on_roll_main_tag(move || {
+        let new_main_window = main_window_weak.unwrap();
+        let info_panel_adapter = new_main_window.global::<InfoPanelAdapter>();
+
+        let inputted_strings = info_panel_adapter.get_input_roll_list();
+
+        let number_of_strings_to_parse = info_panel_adapter.get_rules_roll_list()
+            .as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap().row_count();
+
+        let inputted_nums = match utils::parse_vec_shared_str(inputted_strings, number_of_strings_to_parse) {
+            Ok(nums) => { nums },
+            Err(_) => {
+                info_panel_adapter.set_roll_button_text(slint::SharedString::from("Error. Retype and try again"));
+                return
+            }
+        };
+
+        let rolled_tag_id = utils::roll_id_by_number_cummul(&inputted_nums);
+        let main_tag = info_panel_adapter.get_rules_roll_list()
+            .as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap()
+            .row_data(rolled_tag_id).unwrap_or(slint::SharedString::from("None"));
+
+        let main_tag_str = main_tag.clone().to_string();
+
+        let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
+        lower_panel_adapter.set_player_main_tag(main_tag);
+        lower_panel_adapter.set_player_status(3);
+
+        info_panel_adapter.set_any_header(slint::SharedString::from("Main rule"));
+        info_panel_adapter.set_any_text(slint::SharedString::from(format!("Your new main rule is: {}", main_tag_str)));
+        info_panel_adapter.set_panel_mode(3);
+    });
+}
+
 fn update_player_pos(field_adapter: &FieldAdapter, player_loc: i32) {
     let number_of_tiles = field_adapter.get_number_of_tiles();
     let new_player_loc = player_loc % number_of_tiles;

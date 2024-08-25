@@ -97,6 +97,7 @@ pub fn roll_dices(dices: slint::ModelRc<DiceRoll>) -> Vec<i32> {
     dice_rolls
 }
 
+// Returns tile data based on player_id because tile's data splitted on 4 parts
 pub fn get_tile_data_from_tile_id(tile_num: usize, field_adapter: &FieldAdapter) -> FieldTilesData {
     let number_of_tiles = field_adapter.get_number_of_tiles() as usize;
     let (ul, ur, dr) = get_corners(number_of_tiles);
@@ -118,4 +119,34 @@ pub fn get_tile_data_from_tile_id(tile_num: usize, field_adapter: &FieldAdapter)
         let now_tiles = now_tiles.as_any().downcast_ref::<VecModel<FieldTilesData>>().unwrap();
         now_tiles.row_data(number_of_tiles - tile_num - 1).unwrap()
     }
+}
+
+pub fn parse_vec_shared_str(
+        strings: slint::ModelRc<slint::SharedString>,
+        offset: usize)
+    -> Result<Vec<i32>, std::num::ParseIntError> {
+    let input_strings = strings.as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap();
+    let mut digits = vec![];
+
+    for (now_id, now_string) in input_strings.iter().enumerate() {
+        if now_id >= offset { break; }
+        digits.push(now_string.parse()?)
+    }
+    Ok(digits)
+}
+
+pub fn roll_id_by_number_cummul(input_nums: &[i32]) -> usize {
+    let number_sum = input_nums.iter().sum();
+
+    let mut rng = rand::thread_rng();
+    let rolled_num = rng.gen_range(0..number_sum);
+
+    let mut temp_sum = 0;
+    for (now_id, now_num) in input_nums.iter().enumerate() {
+        temp_sum += *now_num;
+        if temp_sum > rolled_num {
+            return now_id
+        }
+    }
+    unreachable!();
 }

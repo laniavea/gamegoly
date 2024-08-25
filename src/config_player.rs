@@ -11,6 +11,7 @@ struct SerdePlayerData {
     player_state: i32,
     drops: i32,
     half_moves: i32,
+    main_tag: String,
     specials: Vec<String>,
     add_tags: Vec<String>,
 }
@@ -21,6 +22,7 @@ pub struct PlayerDataSlint {
     state: i32,
     drops: i32,
     half_moves: i32,
+    main_tag: slint::SharedString,
     specials: slint::ModelRc<slint::SharedString>,
     add_tags: slint::ModelRc<slint::SharedString>
 }
@@ -40,6 +42,10 @@ impl PlayerDataSlint {
 
     pub fn half_moves(&self) -> i32 {
         self.half_moves
+    }
+
+    pub fn main_tag(&self) -> slint::SharedString {
+        self.main_tag.clone()
     }
 
     pub fn specials(&self) -> slint::ModelRc<slint::SharedString> {
@@ -70,6 +76,7 @@ pub fn read_config(file_path: &str) -> Result<PlayerDataSlint, Box<dyn std::erro
         state: player_data.player_state,
         drops: player_data.drops,
         half_moves: player_data.half_moves,
+        main_tag: slint::SharedString::from(player_data.main_tag),
         specials: slint::ModelRc::new(slint::VecModel::from(specials)),
         add_tags: slint::ModelRc::new(slint::VecModel::from(add_tags)),
     })
@@ -92,6 +99,7 @@ pub fn serialize_player(pl_loc: i32, lower_panel_adapter: LowerPanelAdapter) -> 
         player_state: lower_panel_adapter.get_player_status(),
         drops: 1,
         half_moves: 3,
+        main_tag: "main_tag".to_string(),
         specials: end_specials,
         add_tags: end_add_tags,
     };

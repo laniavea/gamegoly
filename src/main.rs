@@ -37,6 +37,7 @@ fn main() -> Result<(), slint::PlatformError> {
 
     slint_callbacks::lower_panel_callbacks(main_window_weak.clone());
     slint_callbacks::field_callbacks(main_window_weak.clone());
+    slint_callbacks::info_panel_callbacks(main_window_weak.clone());
 
     main_window.run()
 }

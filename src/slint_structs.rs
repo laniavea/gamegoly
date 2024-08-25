@@ -189,6 +189,7 @@ impl Condition {
                 info_panel_adapter.set_any_text(slint::SharedString::from(format!("{val_name_to_change}: {}", data[1])));
                 info_panel_adapter.set_panel_mode(3)
             }
+
         } else if self.rule.starts_with("rand_by(") {
             let elements_to_search: &str = &self.rule[8..self.rule.len() - 1];
 
