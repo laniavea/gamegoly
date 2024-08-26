@@ -204,7 +204,6 @@ impl Condition {
                         now_elements.push(slint::SharedString::from(elem));
                     }
                 }
-
             }
 
             if now_elements.is_empty() {
@@ -213,6 +212,84 @@ impl Condition {
 
             info_panel_adapter.set_rules_roll_list(slint::ModelRc::new(slint::VecModel::from(now_elements)));
             info_panel_adapter.set_panel_mode(5);
+
+        } else if self.rule.starts_with("mt_list(") {
+            let list_to_roll = &self.rule[8..(self.rule.len() - 1)];
+
+            let lists = field_adapter.get_lists();
+            for list in lists.iter() {
+                let list_name: slint::SharedString = list_to_roll.into();
+                let res = list.check_name_and_roll(&list_name);
+                if let Some(rolled_value) = res {
+                    info_panel_adapter.set_list_name(list_name);
+                    info_panel_adapter.set_list_roll(rolled_value.clone());
+                    info_panel_adapter.set_panel_mode(4);
+
+                    lower_panel_adapter.set_player_main_tag(rolled_value);
+                    lower_panel_adapter.set_player_status(3);
+                    break;
+                }
+            }
+
+        } else if self.rule.starts_with("skip(") {
+            let new_player_status: i32 = self.rule[5..6].parse().unwrap();
+
+            lower_panel_adapter.set_player_main_tag(slint::SharedString::from("None"));
+            lower_panel_adapter.set_player_status(new_player_status);
+
+            info_panel_adapter.set_any_header(slint::SharedString::from("Player status was updated"));
+            info_panel_adapter.set_any_text(slint::SharedString::from(""));
+            info_panel_adapter.set_panel_mode(3)
+
+        } else if self.rule.starts_with("mt_from_rule(") {
+            let rule_id: usize = self.rule[13..14].parse().unwrap();
+
+            let player_loc = field_adapter.get_player_loc_id() as usize;
+            let now_tile = utils::get_tile_data_from_tile_id(player_loc, field_adapter);
+
+            let rule = now_tile.rules.as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap()
+                .row_data(rule_id-1).unwrap_or(slint::SharedString::from("None"));
+
+            lower_panel_adapter.set_player_main_tag(rule);
+            lower_panel_adapter.set_player_status(3);
+
+            info_panel_adapter.set_any_header(slint::SharedString::from("Player's main tag was updated"));
+            info_panel_adapter.set_any_text(slint::SharedString::from(""));
+            info_panel_adapter.set_panel_mode(3);
+
+        } else if self.rule.starts_with("rand_by_dist(") {
+            let rule_content = &self.rule[13..self.rule.len()-1];
+
+            let mut rules: Vec<&str> = vec![];
+            let mut rules_weight: Vec<i32> = vec![];
+
+            for now_rule in rule_content.split(',') {
+                let rule_and_weight: Vec<&str> = now_rule.split('(').collect();
+
+                if rule_and_weight.len() == 2{
+                    rules.push(rule_and_weight[0]);
+                    rules_weight.push(rule_and_weight[1][..rule_and_weight[1].len()-1].parse::<i32>().unwrap());
+                }
+            }
+            let mut rng = rand::thread_rng();
+            let rolled_weight = rng.gen_range(0..rules_weight.iter().sum());
+
+            let mut temp_sum = 0;
+            for (now_id, now_weight) in rules_weight.iter().enumerate() {
+                temp_sum += now_weight;
+                if temp_sum > rolled_weight {
+                    let rolled_value = slint::SharedString::from(rules[now_id]);
+
+                    lower_panel_adapter.set_player_main_tag(rolled_value);
+                    lower_panel_adapter.set_player_status(3);
+
+                    info_panel_adapter.set_any_header(slint::SharedString::from("Player's main tag was updated"));
+                    info_panel_adapter.set_any_text(slint::SharedString::from(""));
+                    info_panel_adapter.set_panel_mode(3);
+                    return
+                } 
+            }
+            unreachable!();
         }
     }
 

@@ -125,7 +125,6 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
         let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
 
         let player_loc = field_adapter.get_player_loc_id() as usize;
-
         let cond: FieldTilesData = utils::get_tile_data_from_tile_id(player_loc, &field_adapter);
 
         field_adapter.set_conditions_queue(slint::ModelRc::new(slint::VecModel::from(vec![cond.condition_id])));
