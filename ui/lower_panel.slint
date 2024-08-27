@@ -18,6 +18,7 @@ export global LowerPanelAdapter {
 	
 	callback roll_next_condition();
 	callback roll_tag();
+	callback roll_game();
 }
 
 export component LowerPanel inherits Rectangle {
@@ -30,7 +31,6 @@ export component LowerPanel inherits Rectangle {
 				text: "Click me: " + FieldAdapter.player_loc_id;
 				clicked => {
 					FieldAdapter.player_loc_id += 1;
-					FieldAdapter.player_loc_id = mod(FieldAdapter.player_loc_id, FieldAdapter.number_of_tiles);
 					LowerPanelAdapter.update_player_state(FieldAdapter.player_loc_id);
 				}
 			}
@@ -89,7 +89,7 @@ export component LowerPanel inherits Rectangle {
 				Button {
 					text: "Roll game";
 					clicked => {
-						LowerPanelAdapter.roll_tag();
+						LowerPanelAdapter.roll_game();
 					}
 				}
 

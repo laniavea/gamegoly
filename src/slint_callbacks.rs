@@ -129,8 +129,17 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
 
         field_adapter.set_conditions_queue(slint::ModelRc::new(slint::VecModel::from(vec![cond.condition_id])));
         lower_panel_adapter.set_condition_button(true);
+    });
 
-        lower_panel_adapter.set_player_status(1);
+    // Roll number between
+    let main_window_weak = main_window.as_weak();
+    main_window.global::<LowerPanelAdapter>().on_roll_game(move || {
+        let new_main_window = main_window_weak.unwrap();
+        let field_adapter = new_main_window.global::<FieldAdapter>();
+        let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
+        let info_panel_adapter = new_main_window.global::<InfoPanelAdapter>();
+
+        info_panel_adapter.set_panel_mode(6);
     });
 }
 
@@ -184,6 +193,10 @@ pub fn info_panel_callbacks(window: Weak<AppWindow>) {
 
 fn update_player_pos(field_adapter: &FieldAdapter, player_loc: i32) {
     let number_of_tiles = field_adapter.get_number_of_tiles();
+    if player_loc >= number_of_tiles {
+        let player_drops = field_adapter.get_player_drops();
+        field_adapter.set_player_drops(player_drops + 1);
+    }
     let new_player_loc = player_loc % number_of_tiles;
 
     let (ver_state, hor_state) = utils::get_ver_hor_state(new_player_loc, number_of_tiles);

@@ -20,7 +20,15 @@ export global InfoPanelAdapter {
 	in-out property <[string]> input_roll_list: ["", "", "", "", ""];
 	in property <string> roll_button_text: "Roll tag";
 
+	in-out property <int> min_value: 0;
+	in-out property <int> max_value: 100;
+	in property <string> roll_num_button_text: "Roll game's number";
+	in-out property <string> rolled_num: "None";
+	in-out property <string> rolled_num_alt: "None";
+	in-out property <bool> rolled_num_but_v: false;
+
 	callback roll_main_tag();
+	callback roll_num_between();
 }
 
 //NOTE: I couldn't find smth simular to case which operates elements.
@@ -174,19 +182,21 @@ export component InfoPanel inherits Rectangle {
 
 				HorizontalLayout {
 					alignment: space-around;
-					for now_rule in InfoPanelAdapter.rules_roll_list: Text {
-						horizontal-alignment: center;
-						text: now-rule;
-					}
-				}
+					for now_rule[i] in InfoPanelAdapter.rules_roll_list: VerticalLayout {
+						alignment: center;
+						spacing: normal_text_size;
 
-				HorizontalLayout {
-					alignment: space-around;
-					for now_rule[i] in InfoPanelAdapter.rules_roll_list: LineEdit {
-						width: normal_text_size * 5;
-						horizontal-alignment: center;
-						edited(text) => {
-							InfoPanelAdapter.input_roll_list[i] = text;
+						Text {
+							horizontal-alignment: center;
+							text: now-rule;
+						}
+
+						LineEdit {
+							width: normal_text_size * 5;
+							horizontal-alignment: center;
+							edited(text) => {
+								InfoPanelAdapter.input_roll_list[i] = text;
+							}
 						}
 					}
 				}
@@ -200,10 +210,77 @@ export component InfoPanel inherits Rectangle {
 				}
 			}
 		}
+
+	if InfoPanelAdapter.panel_mode == 6:
+		Rectangle {
+			background: gray;
+			VerticalLayout {
+				alignment: center;
+				spacing: normal_text_size * 2;
+
+				HorizontalLayout {
+					alignment: space-around;
+					VerticalLayout {
+						alignment: center;
+						spacing: normal_text_size * 2;
+						Text {
+							horizontal-alignment: center;
+							text: "Min:";
+						}
+
+						LineEdit {
+							width: normal_text_size * 5;
+							horizontal-alignment: center;
+							text: InfoPanelAdapter.min_value;
+						}
+					}
+
+					Button {
+						text: InfoPanelAdapter.roll_num_button_text;
+						max-height: normal_text_size;
+						clicked => {
+							InfoPanelAdapter.roll_num_between()
+						}
+					}
+
+					VerticalLayout {
+						alignment: center;
+						spacing: normal_text_size * 2;
+						Text {
+							horizontal-alignment: center;
+							text: "Max:";
+						}
+						LineEdit {
+							width: normal_text_size * 5;
+							horizontal-alignment: center;
+							text: InfoPanelAdapter.max_value;
+						}
+					}
+				}
+
+				HorizontalLayout {
+					Text {
+						horizontal-alignment: center;
+						text: "Rolled game's num: " + InfoPanelAdapter.rolled_num;
+					}
+
+					Button {
+						visible: InfoPanelAdapter.rolled_num_but_v;
+						text: "Continue";
+					}
+
+					Text {
+						horizontal-alignment: center;
+						text: "Rolled game's num (half-move): " + InfoPanelAdapter.rolled_num_alt;
+					}
+
+				}
+			}
+		}
 		
 
 	//TODO: Remove test panel, change startup panel to tile where player now is.
-	if InfoPanelAdapter.panel_mode == 6:
+	if InfoPanelAdapter.panel_mode == 7:
 		Rectangle {
 			background: gray;
 			Text {
