@@ -186,6 +186,7 @@ export component Field inherits Rectangle {
 
 					InfoPanel {
 						panel_minimal_side: min(parent.width, parent.height);
+						panel_width: parent.width;
 						normal_text_size: text_size;
 						preferred-height: (now_height - 2 * tiles_size_height) / 2;
 					}

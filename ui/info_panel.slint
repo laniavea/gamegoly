@@ -19,6 +19,7 @@ export global InfoPanelAdapter {
 	in-out property <[string]> rules_roll_list;
 	in-out property <[string]> input_roll_list: ["", "", "", "", ""];
 	in property <string> roll_button_text: "Roll tag";
+	in property <int> number_of_games: 0;
 
 	in-out property <int> min_value: 0;
 	in-out property <int> max_value: 100;
@@ -29,6 +30,7 @@ export global InfoPanelAdapter {
 
 	callback roll_main_tag();
 	callback roll_num_between();
+	callback to_state_4();
 }
 
 //NOTE: I couldn't find smth simular to case which operates elements.
@@ -37,6 +39,7 @@ export global InfoPanelAdapter {
 export component InfoPanel inherits Rectangle {
 	in property <length> normal_text_size;
 	in property <length> panel_minimal_side;
+	in property <length> panel_width;
 
 	// Shows tile info
 	if InfoPanelAdapter.panel_mode == 1:
@@ -214,27 +217,48 @@ export component InfoPanel inherits Rectangle {
 	if InfoPanelAdapter.panel_mode == 6:
 		Rectangle {
 			background: gray;
-			VerticalLayout {
-				alignment: center;
-				spacing: normal_text_size * 2;
+			HorizontalLayout {
+				alignment: space-around;
+				VerticalLayout {
+					width: panel_width / 4;
+					alignment: center;
+					spacing: normal_text_size * 2;
+					Text {
+						color: black;
+						horizontal-alignment: center;
+						vertical-alignment: center;
+						font-size: normal_text_size * 1.2;
+						font-weight: 500;
+						wrap: word-wrap;
+						overflow: elide;
+						text: "Min:";
+					}
 
-				HorizontalLayout {
-					alignment: space-around;
-					VerticalLayout {
-						alignment: center;
-						spacing: normal_text_size * 2;
-						Text {
-							horizontal-alignment: center;
-							text: "Min:";
-						}
-
-						LineEdit {
-							width: normal_text_size * 5;
-							horizontal-alignment: center;
-							text: InfoPanelAdapter.min_value;
+					LineEdit {
+						horizontal-alignment: center;
+						text: InfoPanelAdapter.min_value;
+						edited(text) => {
+							InfoPanelAdapter.input_roll_list[0] = text;
 						}
 					}
 
+					Text {
+						color: black;
+						horizontal-alignment: center;
+						vertical-alignment: center;
+						font-size: normal_text_size / 1.5;
+						font-weight: 500;
+						wrap: word-wrap;
+						overflow: elide;
+						text: "Rolled game's num: " + InfoPanelAdapter.rolled_num;
+					}
+
+				}
+
+				VerticalLayout {
+					width: panel_width / 5;
+					alignment: center;
+					spacing: normal_text_size * 2;
 					Button {
 						text: InfoPanelAdapter.roll_num_button_text;
 						max-height: normal_text_size;
@@ -243,37 +267,46 @@ export component InfoPanel inherits Rectangle {
 						}
 					}
 
-					VerticalLayout {
-						alignment: center;
-						spacing: normal_text_size * 2;
-						Text {
-							horizontal-alignment: center;
-							text: "Max:";
-						}
-						LineEdit {
-							width: normal_text_size * 5;
-							horizontal-alignment: center;
-							text: InfoPanelAdapter.max_value;
+					Button {
+						visible: InfoPanelAdapter.rolled_num_but_v;
+						text: "Continue";
+						clicked => {
+							InfoPanelAdapter.to_state_4()
 						}
 					}
 				}
 
-				HorizontalLayout {
+				VerticalLayout {
+					width: panel_width / 4;
+					alignment: center;
+					spacing: normal_text_size * 2;
 					Text {
+						color: black;
 						horizontal-alignment: center;
-						text: "Rolled game's num: " + InfoPanelAdapter.rolled_num;
+						vertical-alignment: center;
+						font-size: normal_text_size * 1.2;
+						font-weight: 500;
+						wrap: word-wrap;
+						overflow: elide;
+						text: "Max:";
 					}
-
-					Button {
-						visible: InfoPanelAdapter.rolled_num_but_v;
-						text: "Continue";
+					LineEdit {
+						horizontal-alignment: center;
+						text: InfoPanelAdapter.max_value;
+						edited(text) => {
+							InfoPanelAdapter.input_roll_list[1] = text;
+						}
 					}
-
 					Text {
+						color: black;
 						horizontal-alignment: center;
+						vertical-alignment: center;
+						font-size: normal_text_size / 1.5;
+						font-weight: 500;
+						wrap: word-wrap;
+						overflow: elide;
 						text: "Rolled game's num (half-move): " + InfoPanelAdapter.rolled_num_alt;
 					}
-
 				}
 			}
 		}

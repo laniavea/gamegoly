@@ -7,6 +7,8 @@ use slint::Weak;
 use slint::{Model, VecModel};
 use slint::ComponentHandle;
 
+use rand::Rng;
+
 pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
     let main_window = window.unwrap();
 
@@ -135,10 +137,26 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
     let main_window_weak = main_window.as_weak();
     main_window.global::<LowerPanelAdapter>().on_roll_game(move || {
         let new_main_window = main_window_weak.unwrap();
-        let field_adapter = new_main_window.global::<FieldAdapter>();
-        let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
         let info_panel_adapter = new_main_window.global::<InfoPanelAdapter>();
 
+        let new_max = match info_panel_adapter.get_number_of_games() {
+            0 => 100,
+            value => {
+                info_panel_adapter.set_number_of_games(0);
+                value
+            },
+        };
+
+        let new_roll_list: Vec<slint::SharedString> = vec![
+            slint::SharedString::from("0"),
+            slint::SharedString::from(format!("{}", new_max)),
+            slint::SharedString::from(""),
+            slint::SharedString::from(""),
+            slint::SharedString::from(""),
+        ];
+
+        info_panel_adapter.set_max_value(new_max);
+        info_panel_adapter.set_input_roll_list(slint::ModelRc::new(slint::VecModel::from(new_roll_list)));
         info_panel_adapter.set_panel_mode(6);
     });
 }
@@ -185,9 +203,69 @@ pub fn info_panel_callbacks(window: Weak<AppWindow>) {
         lower_panel_adapter.set_player_main_tag(main_tag);
         lower_panel_adapter.set_player_status(3);
 
+        info_panel_adapter.set_number_of_games(inputted_nums[rolled_tag_id]);
+
         info_panel_adapter.set_any_header(slint::SharedString::from("Main rule"));
         info_panel_adapter.set_any_text(slint::SharedString::from(format!("Your new main rule is: {}", main_tag_str)));
         info_panel_adapter.set_panel_mode(3);
+    });
+
+    // Roll random game's num
+    let main_window_weak = main_window.as_weak();
+    main_window.global::<InfoPanelAdapter>().on_roll_num_between(move || {
+        let new_main_window = main_window_weak.unwrap();
+        let info_panel_adapter = new_main_window.global::<InfoPanelAdapter>();
+
+        let inputted_strings = info_panel_adapter.get_input_roll_list();
+
+        let inputted_nums = match utils::parse_vec_shared_str(inputted_strings, 2) {
+            Ok(nums) => { nums },
+            Err(_) => {
+                info_panel_adapter.set_roll_num_button_text(slint::SharedString::from("Error. Retype and try again"));
+                info_panel_adapter.set_rolled_num_but_v(false);
+                return
+            }
+        };
+
+        let (lower_bound, upper_bound) = (inputted_nums[0], inputted_nums[1]);
+        if lower_bound > upper_bound {
+            info_panel_adapter.set_roll_num_button_text(slint::SharedString::from("Error. Retype and try again"));
+            info_panel_adapter.set_rolled_num_but_v(false);
+            return
+        }
+
+        info_panel_adapter.set_roll_num_button_text(slint::SharedString::from("Roll game's number"));
+
+        let avg_value = (upper_bound + lower_bound) / 2;
+
+        let mut rng = rand::thread_rng();
+        let rolled_value = rng.gen_range(lower_bound..upper_bound+1);
+
+        let alt_rolled_value = if rolled_value >= avg_value {
+            rolled_value - avg_value
+        } else {
+            rolled_value + avg_value
+        };
+
+        info_panel_adapter.set_rolled_num_but_v(true);
+        info_panel_adapter.set_rolled_num(slint::SharedString::from(format!("{rolled_value}")));
+        info_panel_adapter.set_rolled_num_alt(slint::SharedString::from(format!("{alt_rolled_value}")));
+        info_panel_adapter.set_panel_mode(6)
+
+    });
+
+    // Continue when game have been chosen
+    let main_window_weak = main_window.as_weak();
+    main_window.global::<InfoPanelAdapter>().on_to_state_4(move || {
+        let new_main_window = main_window_weak.unwrap();
+        let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
+        let info_panel_adapter =  new_main_window.global::<InfoPanelAdapter>();
+
+        info_panel_adapter.set_any_header(slint::SharedString::from("You chosed your game!"));
+        info_panel_adapter.set_any_text(slint::SharedString::from(""));
+        info_panel_adapter.set_panel_mode(3);
+
+        lower_panel_adapter.set_player_status(4);
     });
 }
 
