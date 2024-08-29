@@ -3,7 +3,8 @@ import { Button } from "std-widgets.slint";
 import { FieldTile } from "./field_tile.slint";
 import { FieldTilesData, FieldMainData, DiceRoll } from "./field_data.slint";
 
-import { InfoPanel, InfoPanelAdapter } from "./info_panel.slint";
+import { InfoPanel } from "./info_panel.slint";
+import { InfoPanelAdapter } from "./adapters.slint";
 
 export struct HelpData {
 	help_header: string,
@@ -43,7 +44,6 @@ export global FieldAdapter {
 	in-out property <[DiceRoll]> base_dice;
 
 	// Statice lists
-
 	in property <int> conditions_offset;
 	in-out property <[Condition]> conditions;
 	in-out property <[ListData]> lists;

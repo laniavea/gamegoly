@@ -148,7 +148,7 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
         };
 
         let new_roll_list: Vec<slint::SharedString> = vec![
-            slint::SharedString::from("0"),
+            slint::SharedString::from("1"),
             slint::SharedString::from(format!("{}", new_max)),
             slint::SharedString::from(""),
             slint::SharedString::from(""),
@@ -159,6 +159,15 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
         info_panel_adapter.set_input_roll_list(slint::ModelRc::new(slint::VecModel::from(new_roll_list)));
         info_panel_adapter.set_panel_mode(6);
     });
+
+    // Remove used information / stats
+    let main_window_weak = main_window.as_weak();
+    main_window.global::<LowerPanelAdapter>().on_commit_used(move || {
+        let new_main_window = main_window_weak.unwrap();
+        let info_panel_adapter = new_main_window.global::<InfoPanelAdapter>();
+
+        info_panel_adapter.set_panel_mode(7);
+    })
 }
 
 pub fn field_callbacks(window: Weak<AppWindow>) {
@@ -267,6 +276,14 @@ pub fn info_panel_callbacks(window: Weak<AppWindow>) {
 
         lower_panel_adapter.set_player_status(4);
     });
+
+    let main_window_weak = main_window.as_weak();
+    main_window.global::<InfoPanelAdapter>().on_modifers_end(move || {
+        let new_main_window = main_window_weak.unwrap();
+        let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
+
+        lower_panel_adapter.set_player_status(5);
+    })
 }
 
 fn update_player_pos(field_adapter: &FieldAdapter, player_loc: i32) {

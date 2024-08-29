@@ -1,0 +1,55 @@
+import { FieldTilesData } from "./field_data.slint";
+
+export global LowerPanelAdapter {
+	in-out property <bool> condition_button;
+
+	in-out property <int> player_status;
+	in-out property <string> player_main_tag;
+	in-out property <[string]> player_special;
+	in-out property <[string]> player_add_tags;
+	in-out property <string> combined_specials;
+	in-out property <string> combined_add_tags;
+	
+	callback update_player_state(int);
+	callback roll_dice();
+	callback save_player_state();
+	
+	callback roll_next_condition();
+	callback roll_tag();
+	callback roll_game();
+	callback commit_used();
+}
+
+export global InfoPanelAdapter {
+	in_out property <int> panel_mode;
+
+	in-out property <FieldTilesData> tile_data;
+
+	in-out property <int> dices_count;
+	in-out property <int> dices_max_digits;
+	in-out property <[int]> dices;
+
+	in-out property <string> any_header;
+	in-out property <string> any_text;
+
+	in-out property <string> list_name;
+	in-out property <string> list_roll;
+
+	in-out property <[string]> rules_roll_list;
+	in-out property <[string]> input_roll_list: ["", "", "", "", ""];
+	in property <string> roll_button_text: "Roll tag";
+	in property <int> number_of_games: 0;
+
+	in-out property <int> min_value: 1;
+	in-out property <int> max_value: 100;
+	in property <string> roll_num_button_text: "Roll game's number";
+	in-out property <string> rolled_num: "None";
+	in-out property <string> rolled_num_alt: "None";
+	in-out property <bool> rolled_num_but_v: false;
+
+	callback roll_main_tag();
+	callback roll_num_between();
+	callback to_state_4();
+	callback modifers_end();
+}
+

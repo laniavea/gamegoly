@@ -1,37 +1,6 @@
-import { LineEdit, Button } from "std-widgets.slint";
+import { LineEdit, Button, GroupBox, CheckBox, ScrollView } from "std-widgets.slint";
 import { FieldTilesData } from "./field_data.slint";
-
-export global InfoPanelAdapter {
-	in_out property <int> panel_mode;
-
-	in-out property <FieldTilesData> tile_data;
-
-	in-out property <int> dices_count;
-	in-out property <int> dices_max_digits;
-	in-out property <[int]> dices;
-
-	in-out property <string> any_header;
-	in-out property <string> any_text;
-
-	in-out property <string> list_name;
-	in-out property <string> list_roll;
-
-	in-out property <[string]> rules_roll_list;
-	in-out property <[string]> input_roll_list: ["", "", "", "", ""];
-	in property <string> roll_button_text: "Roll tag";
-	in property <int> number_of_games: 0;
-
-	in-out property <int> min_value: 0;
-	in-out property <int> max_value: 100;
-	in property <string> roll_num_button_text: "Roll game's number";
-	in-out property <string> rolled_num: "None";
-	in-out property <string> rolled_num_alt: "None";
-	in-out property <bool> rolled_num_but_v: false;
-
-	callback roll_main_tag();
-	callback roll_num_between();
-	callback to_state_4();
-}
+import { LowerPanelAdapter, InfoPanelAdapter } from "./adapters.slint";
 
 //NOTE: I couldn't find smth simular to case which operates elements.
 // Only states to operate properties inside element and if else if during callback call
@@ -310,10 +279,72 @@ export component InfoPanel inherits Rectangle {
 				}
 			}
 		}
+
+	if InfoPanelAdapter.panel_mode == 7:
+		Rectangle {
+			background: gray;
+
+			VerticalLayout {
+				alignment: space-around;
+				Text {
+					color: black;
+					horizontal-alignment: center;
+					vertical-alignment: center;
+					font-size: normal_text_size * 1.5;
+					font-weight: 500;
+					wrap: word-wrap;
+					overflow: elide;
+					text: "Mark used modificators";
+				}
+
+				HorizontalLayout {
+					alignment: space-around;
+					height: panel_minimal_side / 3;
+					ScrollView {
+						width: panel_width / 3;
+						height: panel_minimal_side / 3;
+						viewport-width: self.width;
+						viewport-height: max(self.height, self.height * (LowerPanelAdapter.player_add_tags.length / 6));
+						GroupBox {
+							y: 0;
+							title: "Additional tags";
+							VerticalLayout {
+								for now_add_tag in LowerPanelAdapter.player_add_tags: CheckBox {
+									text: now_add_tag;
+								}
+							}
+						}
+					}
+
+					ScrollView {
+						width: panel_width / 3;
+						height: panel_minimal_side / 3;
+						viewport-width: self.width;
+						viewport-height: max(self.height, self.height * (LowerPanelAdapter.player_special.length / 6));
+						GroupBox {
+							y: 0;
+							title: "Special";
+							VerticalLayout {
+								for now_special in LowerPanelAdapter.player_special: CheckBox {
+									text: now_special;
+								}
+							}
+						}
+					}
+				}
+
+				Button {
+					text: "Continue";
+					clicked => {
+						InfoPanelAdapter.modifers_end()
+					}
+				}
+			}
+		}
 		
 
 	//TODO: Remove test panel, change startup panel to tile where player now is.
-	if InfoPanelAdapter.panel_mode == 7:
+	if InfoPanelAdapter.panel_mode == 10000:
 		Rectangle {
 			background: gray;
 			Text {
