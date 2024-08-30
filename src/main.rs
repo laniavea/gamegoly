@@ -41,3 +41,24 @@ fn main() -> Result<(), slint::PlatformError> {
 
     main_window.run()
 }
+
+// Notes for slint:
+// 1) Try to separate structs and adapters to non-related files to not meet import loop, slint can't
+//    handle it itself
+//
+// 2) I only found solution to set size of imported objects based on parent object is to create
+//    property by hands and pass to it sizes
+//
+// 3) Maybe downcasts aren't necessary :(
+//
+// 4) When itering for the vec inside slint file you can use 
+// for smth[i] in anything_iterable {
+//      ...
+//          adapter.array_of_smth[i] = false // But element i MUST exist before calling it
+//      ...
+// }
+// to access number i and bind smth to it (ex. info_panel.slint)
+//
+// 5) Enjoy
+//
+// for slint 1.6-1.7

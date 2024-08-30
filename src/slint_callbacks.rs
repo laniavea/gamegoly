@@ -165,6 +165,16 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
     main_window.global::<LowerPanelAdapter>().on_commit_used(move || {
         let new_main_window = main_window_weak.unwrap();
         let info_panel_adapter = new_main_window.global::<InfoPanelAdapter>();
+        let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
+
+        let specials_num = lower_panel_adapter.get_player_special()
+            .as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap().row_count();
+
+        let add_tags_num = lower_panel_adapter.get_player_add_tags()
+            .as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap().row_count();
+
+        info_panel_adapter.set_used_specials(slint::ModelRc::new(slint::VecModel::from((0..specials_num).map(|_| false).collect::<Vec<bool>>())));
+        info_panel_adapter.set_used_add_tags(slint::ModelRc::new(slint::VecModel::from((0..add_tags_num).map(|_| false).collect::<Vec<bool>>())));
 
         info_panel_adapter.set_panel_mode(7);
     })
@@ -277,10 +287,56 @@ pub fn info_panel_callbacks(window: Weak<AppWindow>) {
         lower_panel_adapter.set_player_status(4);
     });
 
+    // Commit used modifiers
     let main_window_weak = main_window.as_weak();
     main_window.global::<InfoPanelAdapter>().on_modifers_end(move || {
         let new_main_window = main_window_weak.unwrap();
         let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
+        let info_panel_adapter = new_main_window.global::<InfoPanelAdapter>();
+
+        let used_specials = info_panel_adapter.get_used_specials();
+        let used_add_tags = info_panel_adapter.get_used_add_tags();
+        let specials_model = lower_panel_adapter.get_player_special();
+        let add_tags_model = lower_panel_adapter.get_player_add_tags();
+
+        let used_specials_vec = used_specials.as_any().downcast_ref::<VecModel<bool>>().unwrap();
+        let used_add_tags_vec = used_add_tags.as_any().downcast_ref::<VecModel<bool>>().unwrap();
+        let specials_vecmodel = specials_model.as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap();
+        let add_tags_vecmodel = add_tags_model.as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap();
+        
+        let mut new_specials: Vec<slint::SharedString> = vec![];
+        let mut new_add_tags: Vec<slint::SharedString> = vec![];
+
+        for (now_sp_num, now_sp) in used_specials_vec.iter().enumerate() {
+            if !now_sp {
+                new_specials.push(specials_vecmodel.row_data(now_sp_num)
+                    .unwrap_or(slint::SharedString::from("Error. Impossible to get")))
+            }
+        }
+
+        for (now_add_tag_num, now_add_tag) in used_add_tags_vec.iter().enumerate() {
+            if !now_add_tag {
+                new_add_tags.push(add_tags_vecmodel.row_data(now_add_tag_num)
+                    .unwrap_or(slint::SharedString::from("Error. Impossible to get")))
+            }
+        }
+
+        let half_move_used: bool = info_panel_adapter.get_half_move_used();
+        if half_move_used {
+            let field_adapter = new_main_window.global::<FieldAdapter>();
+            let half_moves = field_adapter.get_player_half_moves();
+            field_adapter.set_player_half_moves(half_moves - 1);
+        }
+
+        lower_panel_adapter.set_player_special(slint::ModelRc::new(slint::VecModel::from(new_specials)));
+        lower_panel_adapter.set_player_add_tags(slint::ModelRc::new(slint::VecModel::from(new_add_tags)));
+
+        lower_panel_adapter.set_combined_specials(utils::combine_strings(lower_panel_adapter.get_player_special()));
+        lower_panel_adapter.set_combined_add_tags(utils::combine_strings(lower_panel_adapter.get_player_add_tags()));
+
+        info_panel_adapter.set_any_header(slint::SharedString::from("Status updated!"));
+        info_panel_adapter.set_any_text(slint::SharedString::from(""));
+        info_panel_adapter.set_panel_mode(3);
 
         lower_panel_adapter.set_player_status(5);
     })

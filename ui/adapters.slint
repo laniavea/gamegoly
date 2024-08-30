@@ -18,6 +18,7 @@ export global LowerPanelAdapter {
 	callback roll_tag();
 	callback roll_game();
 	callback commit_used();
+	callback complete_game();
 }
 
 export global InfoPanelAdapter {
@@ -46,6 +47,10 @@ export global InfoPanelAdapter {
 	in-out property <string> rolled_num: "None";
 	in-out property <string> rolled_num_alt: "None";
 	in-out property <bool> rolled_num_but_v: false;
+
+	in-out property <[bool]> used_add_tags;
+	in-out property <[bool]> used_specials;
+	in-out property <bool> half_move_used: false;
 
 	callback roll_main_tag();
 	callback roll_num_between();

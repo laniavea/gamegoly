@@ -83,6 +83,14 @@ export component LowerPanel inherits Rectangle {
 					}
 				}
 
+			if LowerPanelAdapter.player_status == 5:
+				Button {
+					text: "Complete game";
+					clicked => {
+						LowerPanelAdapter.complete_game();
+					}
+				}
+
 			Button {
 				text: "Save";
 				clicked => {

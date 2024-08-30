@@ -309,8 +309,11 @@ export component InfoPanel inherits Rectangle {
 							y: 0;
 							title: "Additional tags";
 							VerticalLayout {
-								for now_add_tag in LowerPanelAdapter.player_add_tags: CheckBox {
+								for now_add_tag[i] in LowerPanelAdapter.player_add_tags: CheckBox {
 									text: now_add_tag;
+									toggled => {
+										InfoPanelAdapter.used_add_tags[i] = !InfoPanelAdapter.used_add_tags[i];
+									}
 								}
 							}
 						}
@@ -321,15 +324,26 @@ export component InfoPanel inherits Rectangle {
 						height: panel_minimal_side / 3;
 						viewport-width: self.width;
 						viewport-height: max(self.height, self.height * (LowerPanelAdapter.player_special.length / 6));
-						GroupBox {
+						toggled_specials := GroupBox {
 							y: 0;
 							title: "Special";
 							VerticalLayout {
-								for now_special in LowerPanelAdapter.player_special: CheckBox {
+								for now_special[i] in LowerPanelAdapter.player_special: CheckBox {
 									text: now_special;
+									toggled => {
+										InfoPanelAdapter.used_specials[i] = !InfoPanelAdapter.used_specials[i];
+									}
 								}
 							}
 						}
+					}
+				}
+
+				CheckBox {
+					x: panel_width / 2;
+					text: "Half-move used";
+					toggled => {
+						InfoPanelAdapter.half_move_used = !InfoPanelAdapter.half_move_used
 					}
 				}
 
