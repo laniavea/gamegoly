@@ -73,10 +73,10 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
     let main_window_weak = main_window.as_weak();
     main_window.global::<LowerPanelAdapter>().on_save_player_state(move || {
         let new_main_window = main_window_weak.unwrap();
-        let field_adapter = new_main_window.global::<FieldAdapter>();
         let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
+        let field_adapter = new_main_window.global::<FieldAdapter>();
 
-        match serialize_player(field_adapter.get_player_loc_id(), lower_panel_adapter) {
+        match serialize_player(lower_panel_adapter, field_adapter) {
             Ok(_) => (),
             Err(err) => {
                 eprintln!("{}", err);
@@ -177,7 +177,15 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
         info_panel_adapter.set_used_add_tags(slint::ModelRc::new(slint::VecModel::from((0..add_tags_num).map(|_| false).collect::<Vec<bool>>())));
 
         info_panel_adapter.set_panel_mode(7);
-    })
+    });
+
+    let main_window_weak = main_window.as_weak();
+    main_window.global::<LowerPanelAdapter>().on_complete_game(move || {
+        let new_main_window = main_window_weak.unwrap();
+        let info_panel_adapter = new_main_window.global::<InfoPanelAdapter>();
+
+        info_panel_adapter.set_panel_mode(8);
+    });
 }
 
 pub fn field_callbacks(window: Weak<AppWindow>) {
@@ -339,7 +347,40 @@ pub fn info_panel_callbacks(window: Weak<AppWindow>) {
         info_panel_adapter.set_panel_mode(3);
 
         lower_panel_adapter.set_player_status(5);
-    })
+    });
+
+    // Complete game button
+    let main_window_weak = main_window.as_weak();
+    main_window.global::<InfoPanelAdapter>().on_game_complete(move || {
+        let new_main_window = main_window_weak.unwrap();
+        let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
+        let info_panel_adapter = new_main_window.global::<InfoPanelAdapter>();
+
+        lower_panel_adapter.set_player_main_tag(slint::SharedString::from("None"));
+        lower_panel_adapter.set_player_status(1);
+
+        info_panel_adapter.set_any_header(slint::SharedString::from("Status updated!"));
+        info_panel_adapter.set_any_text(slint::SharedString::from("Game completed"));
+        info_panel_adapter.set_panel_mode(3);
+    });
+
+    // Drop game button
+    let main_window_weak = main_window.as_weak();
+    main_window.global::<InfoPanelAdapter>().on_game_dropped(move || {
+        let new_main_window = main_window_weak.unwrap();
+        let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
+        let info_panel_adapter = new_main_window.global::<InfoPanelAdapter>();
+        let field_adapter = new_main_window.global::<FieldAdapter>();
+
+        lower_panel_adapter.set_player_main_tag(slint::SharedString::from("None"));
+        lower_panel_adapter.set_player_status(1);
+
+        field_adapter.set_player_drops(field_adapter.get_player_drops() - 1);
+
+        info_panel_adapter.set_any_header(slint::SharedString::from("Status updated!"));
+        info_panel_adapter.set_any_text(slint::SharedString::from("Game dropped"));
+        info_panel_adapter.set_panel_mode(3);
+    });
 }
 
 fn update_player_pos(field_adapter: &FieldAdapter, player_loc: i32) {

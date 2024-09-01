@@ -3,7 +3,7 @@ use std::fs;
 use slint::{Model, VecModel};
 use nanoserde::{DeJson, SerJson};
 
-use crate::LowerPanelAdapter;
+use crate::{LowerPanelAdapter, FieldAdapter};
 
 #[derive(Debug, Clone, DeJson, SerJson)]
 struct SerdePlayerData {
@@ -82,7 +82,10 @@ pub fn read_config(file_path: &str) -> Result<PlayerDataSlint, Box<dyn std::erro
     })
 }
 
-pub fn serialize_player(pl_loc: i32, lower_panel_adapter: LowerPanelAdapter) -> Result<(), Box<dyn std::error::Error>> {
+pub fn serialize_player(
+    lower_panel_adapter: LowerPanelAdapter,
+    field_adapter: FieldAdapter
+) -> Result<(), Box<dyn std::error::Error>> {
 
     let specials = lower_panel_adapter.get_player_special();
     let add_tags = lower_panel_adapter.get_player_add_tags();
@@ -95,11 +98,11 @@ pub fn serialize_player(pl_loc: i32, lower_panel_adapter: LowerPanelAdapter) -> 
 
     //TODO: Change drops and half_moves
     let serde_player_data = SerdePlayerData {
-        player_location: pl_loc,
+        player_location: field_adapter.get_player_loc_id(),
         player_state: lower_panel_adapter.get_player_status(),
-        drops: 1,
-        half_moves: 3,
-        main_tag: "main_tag".to_string(),
+        drops: field_adapter.get_player_drops(),
+        half_moves: field_adapter.get_player_half_moves(),
+        main_tag: lower_panel_adapter.get_player_main_tag().to_string(),
         specials: end_specials,
         add_tags: end_add_tags,
     };
