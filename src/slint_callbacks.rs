@@ -32,7 +32,21 @@ pub fn lower_panel_callbacks(window: Weak<AppWindow>) {
         let info_panel_adapter = new_main_window.global::<InfoPanelAdapter>();
         let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
 
-        let dices = utils::roll_dices(field_adapter.get_base_dice());
+        let base_dices = field_adapter.get_base_dice();
+        let override_dice = field_adapter.get_override_dice();
+        let add_dice = field_adapter.get_add_dice();
+
+        let dices = if override_dice.row_count() != 0 {
+            field_adapter.set_override_dice(slint::ModelRc::new(slint::VecModel::from(Vec::new())));
+            utils::roll_dices(override_dice)
+        } else if add_dice.row_count() != 0 {
+            field_adapter.set_add_dice(slint::ModelRc::new(slint::VecModel::from(Vec::new())));
+            let mut base_dices = utils::roll_dices(base_dices);
+            base_dices.extend(utils::roll_dices(add_dice));
+            base_dices
+        } else {
+            utils::roll_dices(base_dices)
+        };
 
         let mut dices_sum: i32 = 0;
         let mut dices_max_value: u32 = 0;

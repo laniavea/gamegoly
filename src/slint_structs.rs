@@ -2,13 +2,16 @@ use rand::Rng;
 use slint::{Model, VecModel};
 
 use crate::utils;
-use crate::{FieldAdapter, InfoPanelAdapter, LowerPanelAdapter, SpecialDice, Condition, ListData};
+use crate::{FieldAdapter, InfoPanelAdapter, LowerPanelAdapter, SpecialDice, Condition, ListData, DiceRoll};
 
 impl ListData {
     pub fn make_roll(&self) -> slint::SharedString {
         let elements_count = self.list_elements.row_count();
         let mut rng = rand::thread_rng();
         let rolled_element = rng.gen_range(0..elements_count);
+
+        //TODO: REMOVE IT
+        let rolled_element = 0;
 
         let all_rolls = self.list_elements.as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap();
 
@@ -112,24 +115,32 @@ impl Condition {
             for list in lists.iter() {
                 let list_name: slint::SharedString = list_to_roll.into();
                 let res = list.check_name_and_roll(&list_name);
-                if let Some(rolled_value) = res {
+                if let Some(mut rolled_value) = res {
+                    
+                    if let Some((cond_id, new_rolled_value)) = utils::check_list_for_cond(rolled_value.as_str()) {
+                        rolled_value = new_rolled_value;
+                        field_adapter.get_conditions_queue()
+                            .as_any().downcast_ref::<VecModel<i32>>().unwrap().push(cond_id);
+                    } else {
+                        match list_to_roll {
+                            "Дополнительный тег" => {
+                                let add_tags = lower_panel_adapter.get_player_add_tags();
+                                add_tags.as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap().push(rolled_value.clone());
+                                lower_panel_adapter.set_combined_add_tags(utils::combine_strings(lower_panel_adapter.get_player_add_tags()));
+                            },
+                            "Спешл" => {
+                                let specials = lower_panel_adapter.get_player_special();
+                                specials.as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap().push(rolled_value.clone());
+                                lower_panel_adapter.set_combined_specials(utils::combine_strings(lower_panel_adapter.get_player_special()));
+                            },
+                            _ => ()
+                        }
+                    }
+
                     info_panel_adapter.set_list_name(list_name);
-                    info_panel_adapter.set_list_roll(rolled_value.clone());
+                    info_panel_adapter.set_list_roll(rolled_value);
                     info_panel_adapter.set_panel_mode(4);
 
-                    match list_to_roll {
-                        "Дополнительный тег" => {
-                            let add_tags = lower_panel_adapter.get_player_add_tags();
-                            add_tags.as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap().push(rolled_value);
-                            lower_panel_adapter.set_combined_add_tags(utils::combine_strings(lower_panel_adapter.get_player_add_tags()));
-                        },
-                        "Спешл" => {
-                            let specials = lower_panel_adapter.get_player_special();
-                            specials.as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap().push(rolled_value);
-                            lower_panel_adapter.set_combined_specials(utils::combine_strings(lower_panel_adapter.get_player_special()));
-                        },
-                        _ => ()
-                    }
                     break;
                 }
             }
@@ -290,6 +301,23 @@ impl Condition {
                 } 
             }
             unreachable!();
+
+        } else if self.rule.starts_with("pl_cube_add") {
+            let add_dice = &self.rule[12..self.rule.len()-1];
+
+            let new_dice = utils::dices_from_string(add_dice).unwrap();
+            let add_dices = field_adapter.get_add_dice();
+
+            add_dices.as_any().downcast_ref::<VecModel<DiceRoll>>().unwrap().extend(new_dice);
+
+        } else if self.rule.starts_with("pl_cube_set") {
+            let over_dice = &self.rule[11..self.rule.len()-1];
+
+            let new_dice = utils::dices_from_string(over_dice).unwrap();
+            let override_dices = field_adapter.get_override_dice();
+
+            override_dices.as_any().downcast_ref::<VecModel<DiceRoll>>().unwrap().extend(new_dice);
+
         }
     }
 

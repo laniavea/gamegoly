@@ -5,7 +5,7 @@ use crate::FieldAdapter;
 use crate::{DiceRoll, SpecialDice, FieldTilesData};
 use crate::config_field::GameGolyConfigError;
 
-// Returns id of corners for the field
+// Returns id of corners for the field pub fn get_corners(number_of_elems: usize) ->(usize, usize, usize) {
 pub fn get_corners(number_of_elems: usize) ->(usize, usize, usize) {
     let main_value = (number_of_elems - 4) / 4;
 
@@ -121,6 +121,7 @@ pub fn get_tile_data_from_tile_id(tile_num: usize, field_adapter: &FieldAdapter)
     }
 }
 
+// Returns vec of usize values, created for roll inside multiple LineEdits
 pub fn parse_vec_shared_str(
         strings: slint::ModelRc<slint::SharedString>,
         offset: usize)
@@ -135,6 +136,7 @@ pub fn parse_vec_shared_str(
     Ok(digits)
 }
 
+// Returns id of rolled value from nums cummulative. Used to roll values from tags
 pub fn roll_id_by_number_cummul(input_nums: &[i32]) -> usize {
     let number_sum = input_nums.iter().sum();
 
@@ -149,4 +151,23 @@ pub fn roll_id_by_number_cummul(input_nums: &[i32]) -> usize {
         }
     }
     unreachable!();
+}
+
+// Returs condition id and changed string for list value
+pub fn check_list_for_cond(list_value: &str) -> Option<(i32, slint::SharedString)> {
+    if list_value.get(..1).unwrap_or("-").contains('[') {
+        let left_br = match list_value.find(']') {
+            Some(val) => val,
+            None => return None
+        };
+
+        let cond_id: i32 = match list_value.get(1..left_br).unwrap_or("!").parse() {
+            Ok(val) => val,
+            Err(_) => return None
+        };
+
+        let new_value = slint::SharedString::from(list_value.get(left_br+1..).unwrap());
+        return Some((cond_id, new_value))
+    }
+    None
 }
