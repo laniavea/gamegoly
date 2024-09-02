@@ -16,6 +16,6 @@ Cargo.lock
 # Test files
 test_field.json
 
-# Player info
-player.json
-player.json.old
+# My info and test info
+my*.json
+test*.json

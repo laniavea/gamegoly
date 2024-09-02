@@ -397,7 +397,7 @@ pub fn info_panel_callbacks(window: Weak<AppWindow>) {
     });
 }
 
-fn update_player_pos(field_adapter: &FieldAdapter, player_loc: i32) {
+pub fn update_player_pos(field_adapter: &FieldAdapter, player_loc: i32) {
     let number_of_tiles = field_adapter.get_number_of_tiles();
     if player_loc >= number_of_tiles {
         let player_drops = field_adapter.get_player_drops();

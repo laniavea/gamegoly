@@ -1,3 +1,5 @@
+use std::env;
+
 mod utils;
 mod config_field;
 mod config_player;
@@ -10,8 +12,27 @@ slint::include_modules!();
 fn main() -> Result<(), slint::PlatformError> {
     let main_window = AppWindow::new()?;
 
+    let args: Vec<String> = env::args().collect();
+
+    let mut args_iter = args.iter();
+
+    let mut field_config_path = String::from("./field.json");
+    let mut player_config_path = String::from("./player.json");
+
+    while let Some(now_arg) = args_iter.next() {
+        match now_arg.as_str() {
+            "--field" => {
+                field_config_path = args_iter.next().unwrap_or(&String::from("./field.json")).clone();
+            },
+            "--player" => {
+                player_config_path = args_iter.next().unwrap_or(&String::from("./player.json")).clone();
+            },
+            _ => ()
+        }
+    }
+
     let (field_tiles, field_main_data) = 
-        match config_field::read_config("./test_field.json") {
+        match config_field::read_config(field_config_path.as_str()) {
             Err(err) => {
                 eprintln!("Exited with next error while field config read: {err}");
                 return Ok(())
@@ -19,7 +40,7 @@ fn main() -> Result<(), slint::PlatformError> {
             Ok((tiles, main_data)) => (tiles, main_data),
         };
 
-    let player_data = match config_player::read_config("./player.json") {
+    let player_data = match config_player::read_config(player_config_path.as_str()) {
         Err(err) => {
             eprintln!("Exited with next error while player config read: {err}");
             return Ok(())

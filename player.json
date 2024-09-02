@@ -1,0 +1,11 @@
+{
+	"player_location":0,
+	"player_state":1,
+	"drops":1,
+	"half_moves":3,
+	"main_tag":"None",
+	"dice_override":"",
+	"dice_add":"",
+	"specials":[],
+	"add_tags":[]
+}

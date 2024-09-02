@@ -2,6 +2,7 @@ use rand::Rng;
 use slint::{Model, VecModel};
 
 use crate::utils;
+use crate::slint_callbacks::update_player_pos;
 use crate::{FieldAdapter, InfoPanelAdapter, LowerPanelAdapter, SpecialDice, Condition, ListData, DiceRoll};
 
 impl ListData {
@@ -9,9 +10,6 @@ impl ListData {
         let elements_count = self.list_elements.row_count();
         let mut rng = rand::thread_rng();
         let rolled_element = rng.gen_range(0..elements_count);
-
-        //TODO: REMOVE IT
-        let rolled_element = 0;
 
         let all_rolls = self.list_elements.as_any().downcast_ref::<VecModel<slint::SharedString>>().unwrap();
 
@@ -302,7 +300,7 @@ impl Condition {
             }
             unreachable!();
 
-        } else if self.rule.starts_with("pl_cube_add") {
+        } else if self.rule.starts_with("pl_cube_add(") {
             let add_dice = &self.rule[12..self.rule.len()-1];
 
             let new_dice = utils::dices_from_string(add_dice).unwrap();
@@ -310,14 +308,32 @@ impl Condition {
 
             add_dices.as_any().downcast_ref::<VecModel<DiceRoll>>().unwrap().extend(new_dice);
 
-        } else if self.rule.starts_with("pl_cube_set") {
-            let over_dice = &self.rule[11..self.rule.len()-1];
+        } else if self.rule.starts_with("pl_cube_set(") {
+            let over_dice = &self.rule[12..self.rule.len()-1];
 
             let new_dice = utils::dices_from_string(over_dice).unwrap();
             let override_dices = field_adapter.get_override_dice();
 
             override_dices.as_any().downcast_ref::<VecModel<DiceRoll>>().unwrap().extend(new_dice);
 
+        } else if self.rule.starts_with("mv(") {
+            let move_id = self.rule[3..self.rule.len()-1].parse::<i32>().unwrap();
+
+            update_player_pos(field_adapter, move_id)
+
+        } else if self.rule.starts_with("mv_next(") {
+            let move_ids = &self.rule[8..self.rule.len()-1];
+
+            let move_ids_num: Vec<i32> = move_ids.split(',').map(|val| val.parse::<i32>().unwrap()).collect();
+            let player_pos = field_adapter.get_player_loc_id();
+
+            for now_move_id in &move_ids_num {
+                if player_pos < *now_move_id {
+                    update_player_pos(field_adapter, *now_move_id);
+                    return
+                }
+            }
+            update_player_pos(field_adapter, move_ids_num[0]);
         }
     }
 
