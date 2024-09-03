@@ -28,7 +28,7 @@ pub fn set_field_main_info(window: Weak<AppWindow>, field_main_data: &FieldMainD
     field_adapter.set_special_dices(field_main_data.special_dices());
 }
 
-pub fn set_player(window: Weak<AppWindow>, player_data: &PlayerDataSlint) {
+pub fn set_player(window: Weak<AppWindow>, player_data: &PlayerDataSlint, save_file: &str) {
     let main_window = window.unwrap();
     let field_adapter = main_window.global::<FieldAdapter>();
     let lower_panel_adapter = main_window.global::<LowerPanelAdapter>();
@@ -38,6 +38,8 @@ pub fn set_player(window: Weak<AppWindow>, player_data: &PlayerDataSlint) {
     field_adapter.set_player_half_moves(player_data.half_moves());
     field_adapter.set_override_dice(player_data.dice_override());
     field_adapter.set_add_dice(player_data.dice_add());
+
+    field_adapter.set_player_save_file(slint::SharedString::from(save_file));
 
     lower_panel_adapter.set_player_status(player_data.state());
     lower_panel_adapter.set_player_main_tag(player_data.main_tag());

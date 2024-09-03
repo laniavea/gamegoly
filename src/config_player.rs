@@ -149,6 +149,9 @@ pub fn serialize_player(
     };
 
     let result = SerJson::serialize_json(&serde_player_data);
-    fs::write("player.json", result)?;
+
+    let player_conf_path: String = field_adapter.get_player_save_file().into();
+
+    fs::write(player_conf_path, result)?;
     Ok(())
 }
