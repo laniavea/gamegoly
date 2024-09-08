@@ -6,18 +6,12 @@ import { LowerPanelAdapter } from "./adapters.slint";
 export component LowerPanel inherits Rectangle {
 	background: gray;
 	in property <length> panel_size;
+	in property <length> panel_size_width;
 
 	if !LowerPanelAdapter.condition_button:
 		HorizontalLayout {
-			Button {
-				text: "Click me: " + FieldAdapter.player_loc_id;
-				clicked => {
-					FieldAdapter.player_loc_id += 1;
-					LowerPanelAdapter.update_player_state(FieldAdapter.player_loc_id);
-				}
-			}
-
 			Rectangle {
+				width: panel_size_width * 0.6;
 				background: gray;
 				VerticalLayout {
 					alignment: space-around;

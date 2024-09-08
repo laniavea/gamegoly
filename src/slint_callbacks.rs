@@ -389,11 +389,20 @@ pub fn info_panel_callbacks(window: Weak<AppWindow>) {
         lower_panel_adapter.set_player_main_tag(slint::SharedString::from("None"));
         lower_panel_adapter.set_player_status(1);
 
-        field_adapter.set_player_drops(field_adapter.get_player_drops() - 1);
+        let now_drops_num = field_adapter.get_player_drops();
 
-        info_panel_adapter.set_any_header(slint::SharedString::from("Status updated!"));
-        info_panel_adapter.set_any_text(slint::SharedString::from("Game dropped"));
+        if now_drops_num == 0 {
+            update_player_pos(&field_adapter, 10);
+            info_panel_adapter.set_any_header(slint::SharedString::from("JAIL!"));
+            info_panel_adapter.set_any_text(slint::SharedString::from("You're in jail, roll by JAIL rules"));
+        } else {
+            field_adapter.set_player_drops(field_adapter.get_player_drops() - 1);
+            info_panel_adapter.set_any_header(slint::SharedString::from("Status updated!"));
+            info_panel_adapter.set_any_text(slint::SharedString::from("Game dropped"));
+        }
+
         info_panel_adapter.set_panel_mode(3);
+
     });
 }
 
