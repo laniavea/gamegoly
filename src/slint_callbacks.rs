@@ -369,12 +369,21 @@ pub fn info_panel_callbacks(window: Weak<AppWindow>) {
         let new_main_window = main_window_weak.unwrap();
         let lower_panel_adapter = new_main_window.global::<LowerPanelAdapter>();
         let info_panel_adapter = new_main_window.global::<InfoPanelAdapter>();
+        let field_adapter = new_main_window.global::<FieldAdapter>();
 
         lower_panel_adapter.set_player_main_tag(slint::SharedString::from("None"));
         lower_panel_adapter.set_player_status(1);
 
         info_panel_adapter.set_any_header(slint::SharedString::from("Status updated!"));
-        info_panel_adapter.set_any_text(slint::SharedString::from("Game completed"));
+        match serialize_player(lower_panel_adapter, field_adapter) {
+            Ok(_) => {
+                info_panel_adapter.set_any_text(slint::SharedString::from("Game completed\nSaved sucessfully!"));
+            },
+            Err(err) => {
+                info_panel_adapter.set_any_text(slint::SharedString::from("Game completed\nSave FAILED!!! Look inside terminal output"));
+                eprintln!("{}", err);
+            }
+        }
         info_panel_adapter.set_panel_mode(3);
     });
 
@@ -394,11 +403,30 @@ pub fn info_panel_callbacks(window: Weak<AppWindow>) {
         if now_drops_num == 0 {
             update_player_pos(&field_adapter, 10);
             info_panel_adapter.set_any_header(slint::SharedString::from("JAIL!"));
-            info_panel_adapter.set_any_text(slint::SharedString::from("You're in jail, roll by JAIL rules"));
+
+            match serialize_player(lower_panel_adapter, field_adapter) {
+                Ok(_) => {
+                    info_panel_adapter.set_any_text(slint::SharedString::from("You're in jail, roll by JAIL rules.\nSaved sucessfully!"));
+                },
+                Err(err) => {
+                    info_panel_adapter.set_any_text(slint::SharedString::from("You're in jail, roll by JAIL rules.\nSave FAILED!!! Look inside terminal output"));
+                    eprintln!("{}", err);
+                }
+            }
+
         } else {
             field_adapter.set_player_drops(field_adapter.get_player_drops() - 1);
             info_panel_adapter.set_any_header(slint::SharedString::from("Status updated!"));
-            info_panel_adapter.set_any_text(slint::SharedString::from("Game dropped"));
+
+            match serialize_player(lower_panel_adapter, field_adapter) {
+                Ok(_) => {
+                    info_panel_adapter.set_any_text(slint::SharedString::from("Game dropped!\nSaved sucessfully!"));
+                },
+                Err(err) => {
+                    info_panel_adapter.set_any_text(slint::SharedString::from("Game dropped\nSave FAILED!!! Look inside terminal output"));
+                    eprintln!("{}", err);
+                }
+            }
         }
 
         info_panel_adapter.set_panel_mode(3);
@@ -412,7 +440,12 @@ pub fn update_player_pos(field_adapter: &FieldAdapter, player_loc: i32) {
         let player_drops = field_adapter.get_player_drops();
         field_adapter.set_player_drops(player_drops + 1);
     }
-    let new_player_loc = player_loc % number_of_tiles;
+
+    let new_player_loc = if player_loc >= 0 {
+        player_loc % number_of_tiles
+    } else {
+        number_of_tiles + player_loc
+    };
 
     let (ver_state, hor_state) = utils::get_ver_hor_state(new_player_loc, number_of_tiles);
 

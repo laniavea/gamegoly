@@ -240,28 +240,28 @@ export component Field inherits Rectangle {
 	public pure function calc_player_x(window_wight: length) -> length {
 		if FieldAdapter.player_loc_id < FieldAdapter.number_of_tiles / 2 {
 			if FieldAdapter.player_on_ver {
-				return center_field_layout.x - tiles_size_width / 2;
+				return center_field_layout.x - tiles_size_width / 2 - player_size / 2;
 			}
-			return center_field_layout.x + (mod(FieldAdapter.player_loc_id, FieldAdapter.tiles_count_by_side) * tiles_size_width) + tiles_size_width / 2;
+			return center_field_layout.x + (mod(FieldAdapter.player_loc_id, FieldAdapter.tiles_count_by_side) * tiles_size_width) + tiles_size_width / 2 - player_size / 2;
 		} else {
 			if FieldAdapter.player_on_ver {
-				return center_field_layout.x + center_field_layout.width + tiles_size / 2;
+				return right_field_layout.x + tiles_size_width / 2 - player_size / 2;
 			}
-			return center_field_layout.x + center_field_layout.width - (mod(FieldAdapter.player_loc_id, FieldAdapter.tiles_count_by_side * 3 - 3) * tiles_size_width) + tiles_size_width / 2;
+			return center_field_layout.x + center_field_layout.width - (mod(FieldAdapter.player_loc_id, FieldAdapter.tiles_count_by_side * 3 - 3) * tiles_size_width) + tiles_size_width / 2 - player_size / 2;
 		}
 	}
 
 	public pure function calc_player_y(window_height: length) -> length {
 		if FieldAdapter.player_loc_id <= FieldAdapter.number_of_tiles / 2 && FieldAdapter.player_loc_id != 0 {
 			if FieldAdapter.player_on_hor {
-				return center_field_layout.y + tiles_size_height / 2;
+				return center_field_layout.y + tiles_size_height / 2 - player_size / 2;
 			}
-			return left_field_layout.y + left_field_layout.height - (mod(FieldAdapter.player_loc_id, FieldAdapter.tiles_count_by_side) * tiles_size_height) - tiles_size_height / 2;
+			return left_field_layout.y + left_field_layout.height - (mod(FieldAdapter.player_loc_id, FieldAdapter.tiles_count_by_side) * tiles_size_height) - tiles_size_height / 2 - player_size / 2;
 		} else {
 			if FieldAdapter.player_on_hor {
-				return center_field_layout.y + center_field_layout.height - tiles_size / 2;
+				return center_field_layout.y + center_field_layout.height - tiles_size_height / 2 - player_size / 2;
 			}
-			return left_field_layout.y + (mod(FieldAdapter.player_loc_id, FieldAdapter.number_of_tiles / 2) * tiles_size_height) + tiles_size_height / 2;
+			return left_field_layout.y + (mod(FieldAdapter.player_loc_id, FieldAdapter.number_of_tiles / 2) * tiles_size_height) + tiles_size_height / 2 - player_size / 2;
 		}
 	}
 }

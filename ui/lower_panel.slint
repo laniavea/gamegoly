@@ -91,6 +91,17 @@ export component LowerPanel inherits Rectangle {
 					LowerPanelAdapter.save_player_state();
 				}
 			}
+
+			// To debug
+			/*
+			Button {
+				text: "+1";
+				clicked => {
+					FieldAdapter.player_loc_id += 1;
+					LowerPanelAdapter.update_player_state(FieldAdapter.player_loc_id)
+				}
+			}
+			*/
 		}
 	
 	if LowerPanelAdapter.condition_button:
