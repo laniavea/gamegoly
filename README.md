@@ -1,4 +1,6 @@
-# GameGoly
+# GameGoly (WIP)
+
+## Slint version available at branches, it works with older rust and slint 1.6
 
 GameGoly - это настольная игра, сделанная с целью изучить и попробовать новые игры различных жанров и стилей, вышедших в steam. Концепция проекта вдохновлена стримерским ивентом [ХПГолия](https://docs.google.com/spreadsheets/d/e/2PACX-1vQE3NOLPo4WjgT2gu_F-ezS9n2teaFMAcEFTV3GBSaUiqPl--g1g54UPrnqUopyi1xljhQYjuCVPQkQ/pubhtml#) ([Альтернатива](https://rodich.ru/hpgoly)).
 ![Пример поля](static/img/start_field.jpg)
