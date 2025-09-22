@@ -1,10 +1,11 @@
 [package]
 name = "gamegoly"
 version = "0.1.0"
-authors = ["laniavea <laniavea@yahoo.com>"]
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+edition = "2024"
 
 [dependencies]
-rand = "0.8.5"
+actix = "0.13.5"
+actix-web = "4.11.0"
+pretty_env_logger = "0.5.0"
+serde = "1.0.226"
+toml = "0.9.7"

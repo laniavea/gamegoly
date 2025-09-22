@@ -19,3 +19,9 @@ static/test_field.json
 # My info and test info
 my*.json
 test*.json
+my*.toml
+
+
+# Added by cargo
+
+/target
