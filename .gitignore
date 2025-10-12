@@ -25,3 +25,5 @@ my*.toml
 # Added by cargo
 
 /target
+
+__pycache__
