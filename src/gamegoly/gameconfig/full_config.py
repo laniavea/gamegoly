@@ -7,7 +7,6 @@ from .. import entity
 class GameConfig:
     title: str = ""
     base_dice: List[entity.Dice]
-    raw_base_dice: str = ""
     help_info: List[Tuple[str, str]] = []
 
     def __init__(self, field_info):
@@ -17,15 +16,10 @@ class GameConfig:
 
         if field_info["base_dice"] is None:
             raise ValueError("Field part doesn't contains 'base_dice' value")
-        self.raw_base_dice = field_info["base_dice"]
-        try:
-            self.base_dice = entity.create_dices(self.raw_base_dice)
-        except ValueError as e:
-            raise ValueError(f"Failed to create game config: {e}")
+        self.base_dice = entity.create_dices(field_info["base_dice"])
 
         if field_info["help_info"] is not None:
             self.rules = field_info["help_info"]
-
 
 def create_config(file_path):
     config_raw_text = None
