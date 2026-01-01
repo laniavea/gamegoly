@@ -21,6 +21,9 @@ my*.json
 test*.json
 my*.toml
 
+*.egg-info
+uv.lock
+
 
 # Added by cargo
 

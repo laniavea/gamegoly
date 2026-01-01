@@ -1,0 +1,78 @@
+from typing import List, Tuple, Optional
+from pydantic import ValidationError
+
+from .. import entity
+from . import raw_config
+
+class GameConfig:
+    title: str = ""
+    base_dice: List[entity.Dice]
+    help_info: List[Tuple[str, str]] = []
+
+    def __init__(self, raw_config_obj: raw_config.RawGameConfig):
+        self.title = raw_config_obj.field.title.strip()
+        if not self.title:
+            raise ValueError("Title includes only spaces")
+
+        self.base_dice = entity.create_dices(raw_config_obj.field.base_dice)
+
+        if raw_config_obj.field.help_info:
+            self.help_info = GameConfig.create_help_info(raw_config_obj.field.help_info)
+
+    @staticmethod
+    def create_help_info(raw_help_info: List[str]) -> List[Tuple[str, str]]:
+        help_info = []
+
+        for help_str in raw_help_info:
+            if not help_str.startswith("{{"): # }} just to save ident
+                raise ValueError("Config's help rule must starts with '{{rule_name}}'")
+
+            rule_name_sym_status: bool = False
+            rule_name_end_id: Optional[int] = None
+
+            for (help_char_id, help_char) in enumerate(help_str):
+                if help_char_id < 2: # To skip {{ ;and to save ident }}
+                    continue
+
+                if help_char == '}':
+                    if rule_name_sym_status:
+                        rule_name_end_id = help_char_id - 1
+                        break
+                    else:
+                        rule_name_sym_status = True
+                elif rule_name_sym_status:
+                    rule_name_sym_status = False
+            else:
+                raise ValueError("Config's help rule must starts with '{{rule_name}}'")
+
+            rule_name = help_str[2:rule_name_end_id].strip()
+            try:
+                help_str[rule_name_end_id+2]
+            except IndexError:
+                raise ValueError("Config's help rule must be with next format '{{rule_name}}rule_desc'")
+
+            rule_info = help_str[rule_name_end_id+2:].strip()
+
+            if not rule_name:
+                raise ValueError("Config's rule name is empty")
+            if not rule_info:
+                raise ValueError("Config's rule info is empty")
+
+            help_info.append((rule_name, rule_info))
+        return help_info
+
+
+def create_config(file_path):
+    try:
+        raw_config_obj = raw_config.read_raw_config(file_path)
+    except FileNotFoundError as e:
+        print(f"Config not found by path: {file_path}")
+        raise e
+    except ValidationError as e:
+        print(f"Config types are incorrect {e}")
+        raise e
+
+    gc = GameConfig(raw_config_obj)
+
+    print(gc.__dict__)
+    print(gc.base_dice[0].__dict__)

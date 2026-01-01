@@ -1,11 +1,10 @@
 import argparse
 
-from . import gameconfig
+from . import game_config
 
 def main(**kwargs):
     config_file_path = kwargs["config_path"]
-    gameconfig.create_config(config_file_path)
-
+    game_config.create_config(config_file_path)
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
