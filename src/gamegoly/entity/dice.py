@@ -16,16 +16,16 @@ class Dice:
 
         min_roll_value = None
         max_roll_value = None
-        for now_value in norm_dice_str.split(','):
+        for dice_value_str in norm_dice_str.split(','):
             try:
-                now_value_num = int(now_value)
+                dice_value_int = int(dice_value_str)
             except ValueError as e:
                 raise ValueError(f"Dice can't be parsed: {e}")
 
             if min_roll_value is None:
-                min_roll_value = now_value_num
+                min_roll_value = dice_value_int
             elif max_roll_value is None:
-                max_roll_value = now_value_num
+                max_roll_value = dice_value_int
             else:
                 raise ValueError("Too many arguments to create Dice, must be like '1,6' to create dice with 1-6 values")
 
@@ -45,13 +45,13 @@ def create_dices(dices_info: str) -> List[Dice]:
     norm_dices_info = dices_info.strip()
 
     all_dices = []
-    for (now_dice_id, now_dice_info) in enumerate(norm_dices_info.split()):
+    for (dice_id, dice_info) in enumerate(norm_dices_info.split()):
         try:
-            now_dice = Dice(now_dice_info)
+            dice = Dice(dice_info)
         except ValueError as e:
-            raise ValueError(f"Failed to create dice #{now_dice_id+1}: {e}")
+            raise ValueError(f"Failed to create dice #{dice_id+1}: {e}")
 
-        all_dices.append(now_dice)
+        all_dices.append(dice)
 
     if not all_dices:
         raise ValueError(f"Dices part doesn't contains any data")

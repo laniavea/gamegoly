@@ -1,4 +1,4 @@
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Dict
 from pydantic import ValidationError
 
 from .. import entity
@@ -8,6 +8,7 @@ class GameConfig:
     title: str = ""
     base_dice: List[entity.Dice]
     help_info: List[Tuple[str, str]] = []
+    lists: Dict[str, List[str]]
 
     def __init__(self, raw_config_obj: raw_config.RawGameConfig):
         self.title = raw_config_obj.field.title.strip()
@@ -18,6 +19,8 @@ class GameConfig:
 
         if raw_config_obj.field.help_info:
             self.help_info = GameConfig.create_help_info(raw_config_obj.field.help_info)
+
+        self.lists = GameConfig.init_lists(raw_config_obj.lists)
 
     @staticmethod
     def create_help_info(raw_help_info: List[str]) -> List[Tuple[str, str]]:
@@ -60,6 +63,18 @@ class GameConfig:
 
             help_info.append((rule_name, rule_info))
         return help_info
+    
+    @staticmethod
+    def init_lists(raw_lists: List[raw_config.RawListInfo]) -> Dict[str, List[str]]:
+        roll_lists: Dict[str, List[str]] = {}
+        for raw_list in raw_lists:
+            list_name = raw_list.name
+
+            if not raw_list.elements:
+                raise ValueError(f"List '{list_name}' is empty")
+
+            roll_lists[list_name] = raw_list.elements
+        return roll_lists
 
 
 def create_config(file_path):
