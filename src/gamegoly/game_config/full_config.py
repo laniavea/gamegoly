@@ -1,14 +1,16 @@
 from typing import List, Tuple, Optional, Dict
+
 from pydantic import ValidationError
 
-from .. import entity
 from . import raw_config
+from .. import entity
 
 class GameConfig:
     title: str = ""
     base_dice: List[entity.Dice]
     help_info: List[Tuple[str, str]] = []
     lists: Dict[str, List[str]]
+    conditions: Dict[int, entity.ConditionInfo]
 
     def __init__(self, raw_config_obj: raw_config.RawGameConfig):
         self.title = raw_config_obj.field.title.strip()
@@ -21,6 +23,7 @@ class GameConfig:
             self.help_info = GameConfig.create_help_info(raw_config_obj.field.help_info)
 
         self.lists = GameConfig.init_lists(raw_config_obj.lists)
+        self.conditions = GameConfig.init_conditions(raw_config_obj.conditions);
 
     @staticmethod
     def create_help_info(raw_help_info: List[str]) -> List[Tuple[str, str]]:
@@ -75,6 +78,18 @@ class GameConfig:
 
             roll_lists[list_name] = raw_list.elements
         return roll_lists
+
+    @staticmethod
+    def init_conditions(raw_conditions: List[raw_config.RawConditionsInfo]) -> Dict[int, entity.ConditionInfo]:
+        conditions: Dict[int, entity.ConditionInfo] = {}
+
+        for raw_condition in raw_conditions:
+            condition_info = entity.ConditionInfo.from_string(raw_condition.id, raw_condition.rule)
+            if raw_condition.id in conditions:
+                print(f"Condition by id {raw_condition.id} was overrided")
+            conditions[raw_condition.id] = condition_info
+
+        return conditions
 
 
 def create_config(file_path):

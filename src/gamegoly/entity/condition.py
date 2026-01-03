@@ -52,15 +52,49 @@ class ConditionInfo:
         condition_desc: Union[IntCondition, StrCondition, IntListCondition, StrListCondition]
 
         match condition_type_str:
-            case "roll_list":
-                condition_desc = StrCondition("roll_list", condition_value_str)
-
-            case "spawn_conditions":
+            case "skip_to_stage" | "main_rule_from_tile" | "move_to":
                 try:
-                    conditions_to_spawn: List[int] = list(map(int, condition_value_str.split(',')))
+                    condition_desc = IntCondition(condition_type_str, int(condition_value_str))
                 except ValueError as e:
-                    raise ValueError(f"Error while parsing condition '{condition_str}': {e}")
-                condition_desc = IntListCondition("spawn_conditions", conditions_to_spawn)
+                    error_str = f"Error while parsing condition '{condition_str}'"
+                    match condition_type_str:
+                        case "skip_to_stage":
+                            error_description = "Must contain ID of stage between 1 and 5; Ex. skip_to_stage(3)"
+                        case "main_rule_from_tile":
+                            error_description = "Must contain any digit; Ex. main_rule_from_tile(1)"
+                        case "move_to":
+                            error_description = "Must contain tile ID; Ex. move_to(10)"
+
+                    raise ValueError(f"{error_str}. {error_description};\n{e}")
+
+            case "roll_list" | "rand_main_rule" | "main_rule_from_list" | "main_rule_from_dist" | "add_to_player_cubes" | "change_player_cubes":
+                condition_desc = StrCondition(condition_type_str, condition_value_str)
+
+            case "spawn_conditions" | "move_next":
+                try:
+                    int_values: List[int] = [int(x.strip()) for x in condition_value_str.split(',')]
+                except ValueError as e:
+                    error_str = f"Error while parsing condition '{condition_str}'"
+                    match condition_type_str:
+                        case "spawn_conditions":
+                            error_description = "Must contain IDs of conditions to spawn; Ex. spawn_conditions(1, 1, 2)"
+                        case "move_next":
+                            error_description = "Must contain IDs of tiles to move next; Ex. move_next(5, 10, 15, 20)"
+
+                    raise ValueError(f"{error_str}. {error_description};\n{e}")
+                condition_desc = IntListCondition(condition_type_str, int_values)
+            
+            case "change_value":
+                try:
+                    str_values: List[str] = [x.strip() for x in condition_value_str.split(',')]
+                except ValueError as e:
+                    error_str = f"Error while parsing condition '{condition_str}'"
+                    match condition_type_str:
+                        case "change_value":
+                            error_description = "Must contain str info about value change; Ex. change_value(drops, +2)"
+
+                    raise ValueError(f"{error_str}. {error_description};\n{e}")
+                condition_desc = StrListCondition(condition_type_str, str_values)
             case _:
                 raise ValueError("Other conditions not implemented yet")
 
