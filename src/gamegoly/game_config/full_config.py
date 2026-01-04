@@ -11,6 +11,7 @@ class GameConfig:
     help_info: List[Tuple[str, str]] = []
     lists: Dict[str, List[str]]
     conditions: Dict[int, entity.ConditionInfo]
+    events: List[entity.EventInfo]
 
     def __init__(self, raw_config_obj: raw_config.RawGameConfig):
         self.title = raw_config_obj.field.title.strip()
@@ -23,7 +24,9 @@ class GameConfig:
             self.help_info = GameConfig.create_help_info(raw_config_obj.field.help_info)
 
         self.lists = GameConfig.init_lists(raw_config_obj.lists)
-        self.conditions = GameConfig.init_conditions(raw_config_obj.conditions);
+        self.conditions = GameConfig.init_conditions(raw_config_obj.conditions)
+        self.events = GameConfig.init_events(raw_config_obj.events)
+
 
     @staticmethod
     def create_help_info(raw_help_info: List[str]) -> List[Tuple[str, str]]:
@@ -90,6 +93,14 @@ class GameConfig:
             conditions[raw_condition.id] = condition_info
 
         return conditions
+
+    @staticmethod
+    def init_events(raw_events: List[raw_config.RawEventsInfo]) -> List[entity.EventInfo]:
+        events = []
+        for raw_event in raw_events:
+            events.append(entity.EventInfo.from_string(raw_event.condition_id, raw_event.state))
+
+        return events
 
 
 def create_config(file_path):
