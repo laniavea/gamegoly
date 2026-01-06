@@ -24,9 +24,7 @@ my*.toml
 *.egg-info
 uv.lock
 
+frontend/package-lock.json
 
-# Added by cargo
-
-/target
 
 __pycache__

@@ -1,7 +1,7 @@
 
 # Runs app with MyField Config included
 mf:
-	uv run -m src.gamegoly.main --config_path="static/my_field.toml"
+	CONFIG_PATH="static/my_field.toml" uv run uvicorn gamegoly.main:app --reload
 
 test:
 	uv run -m unittest discover -s tests

@@ -112,7 +112,7 @@ class GameConfig:
         return tiles
 
 
-def create_config(file_path):
+def create_config(file_path) -> GameConfig:
     try:
         raw_config_obj = raw_config.read_raw_config(file_path)
     except FileNotFoundError as e:
@@ -126,3 +126,5 @@ def create_config(file_path):
 
     print(gc.__dict__)
     print(gc.base_dice[0].__dict__)
+
+    return gc
