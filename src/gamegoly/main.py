@@ -33,6 +33,11 @@ def create_app(config_path: Optional[str] = None) -> FastAPI:
     async def title():
         return {"message": app.state.config.title}
 
+    @app.get("/api/get_tiles")
+    async def get_tiles():
+        print("here")
+        return {"tiles": app.state.config.get_tiles()}
+
     return app
 
 

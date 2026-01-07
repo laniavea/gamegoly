@@ -3,6 +3,7 @@ from typing import List, Tuple, Optional, Dict
 from pydantic import ValidationError
 
 from . import raw_config
+from .. import api_handlers
 from .. import entity
 
 class GameConfig:
@@ -109,6 +110,15 @@ class GameConfig:
         for raw_tile in raw_tiles:
             tiles.append(entity.TileInfo.from_raw_tile(raw_tile))
 
+        return tiles
+
+    def get_tiles(self) -> List[api_handlers.TileInfoApi]:
+        tiles = []
+        for tile in self.tiles:
+            tiles.append(api_handlers.TileInfoApi(
+                title = tile.title,
+                description = tile.description
+            ))
         return tiles
 
 

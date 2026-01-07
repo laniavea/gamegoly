@@ -26,5 +26,8 @@ uv.lock
 
 frontend/package-lock.json
 
+#temporary
+static/field.toml
+
 
 __pycache__

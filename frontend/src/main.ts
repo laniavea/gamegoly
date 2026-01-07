@@ -1,4 +1,5 @@
 import './style.css'
+import * as InitField from './init_field'
 
 const myButton = document.getElementById("myButton") as HTMLButtonElement;
 
@@ -21,6 +22,8 @@ async function handleClick(event: MouseEvent) {
 
 		const titleName = document.getElementById("titleName") as HTMLHeadingElement;
 		titleName.textContent = data.message;
+
+		InitField.createField()
 	} catch (error) {
 		console.error('Error fetching data', error);
 		console.log("failed to get data");
