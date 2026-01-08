@@ -35,31 +35,53 @@ function generatePoints(numOfTiles: number): [number, number, number] {
 }
 
 function createTiles(tiles: Tiles) {
-	const firstRow = document.getElementById('field-first-row') as HTMLDivElement;
-	const leftCol = document.getElementById('field-left-column') as HTMLDivElement;
-	const rightCol = document.getElementById('field-right-column') as HTMLDivElement;
-	const lastRow = document.getElementById('field-last-row') as HTMLDivElement;
-
 	let tileNum: number = 0
 	let [upRightAngle, downRightAngle, downLeftAngle] = generatePoints(tiles.tiles.length);
+
+	let firstRowDivs: HTMLDivElement[] = [];
+	let leftColDivs: HTMLDivElement[] = [];
+	let rightColDivs: HTMLDivElement[] = [];
+	let lastRowDivs: HTMLDivElement[] = [];
 	for (let tile of tiles.tiles) {
 		const tileDiv = document.createElement('div');
 		tileDiv.className = 'field__tile';
 		tileDiv.textContent = tile.title;
 
 		if (tileNum <= upRightAngle) {
-			firstRow.appendChild(tileDiv)
+			tileDiv.className += ' field__tile_top';
+			firstRowDivs.push(tileDiv);
 		} else if (tileNum < downRightAngle) {
-			rightCol.appendChild(tileDiv)
+			tileDiv.className += ' field__tile_right';
+			rightColDivs.push(tileDiv);
 		} else if (tileNum <= downLeftAngle) {
-			lastRow.appendChild(tileDiv)
+			tileDiv.className += ' field__tile_left';
+			lastRowDivs.push(tileDiv);
 		} else {
-			leftCol.appendChild(tileDiv)
+			tileDiv.className += ' field__tile_down';
+			leftColDivs.push(tileDiv);
 		}
 
 		tileNum += 1;
 	}
 
+	reorderTiles(lastRowDivs);
+	reorderTiles(leftColDivs);
+
+	const firstRow = document.getElementById('field-first-row') as HTMLDivElement;
+	const leftCol = document.getElementById('field-left-column') as HTMLDivElement;
+	const rightCol = document.getElementById('field-right-column') as HTMLDivElement;
+	const lastRow = document.getElementById('field-last-row') as HTMLDivElement;
+
+	firstRow.replaceChildren(...firstRowDivs);
+	leftCol.replaceChildren(...leftColDivs);
+	rightCol.replaceChildren(...rightColDivs);
+	lastRow.replaceChildren(...lastRowDivs);
+
+	document.documentElement.style.setProperty("--tile-num", (upRightAngle + 1).toString());
+}
+
+function reorderTiles(generatedTiles: HTMLDivElement[]) {
+	generatedTiles.reverse()
 }
 
 export async function createField() {
