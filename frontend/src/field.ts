@@ -1,6 +1,7 @@
 interface TilesInfo {
 	title: string,
 	description: string,
+	color: string,
 }
 
 interface Tiles {
@@ -42,22 +43,36 @@ function createTiles(tiles: Tiles) {
 	let leftColDivs: HTMLDivElement[] = [];
 	let rightColDivs: HTMLDivElement[] = [];
 	let lastRowDivs: HTMLDivElement[] = [];
+
 	for (let tile of tiles.tiles) {
 		const tileDiv = document.createElement('div');
-		tileDiv.className = 'field__tile';
+		tileDiv.style.backgroundColor = tile.color;
 		tileDiv.textContent = tile.title;
+		tileDiv.className = 'field__tile';
 
 		if (tileNum <= upRightAngle) {
-			tileDiv.className += ' field__tile_top';
+			if (tileNum === 0) {
+				tileDiv.className += ' field__tile-top_corner-left';
+			} else if (tileNum === upRightAngle) {
+				tileDiv.className += ' field__tile-top_corner-right';
+			} else {
+				tileDiv.className += ' field__tile-top';
+			}
 			firstRowDivs.push(tileDiv);
 		} else if (tileNum < downRightAngle) {
-			tileDiv.className += ' field__tile_right';
+			tileDiv.className += ' field__tile-right';
 			rightColDivs.push(tileDiv);
 		} else if (tileNum <= downLeftAngle) {
-			tileDiv.className += ' field__tile_left';
+			if (tileNum === downRightAngle) {
+				tileDiv.className += ' field__tile-down_corner-right';
+			} else if (tileNum === downLeftAngle) {
+				tileDiv.className += ' field__tile-down_corner-left';
+			} else {
+				tileDiv.className += ' field__tile-down';
+			}
 			lastRowDivs.push(tileDiv);
 		} else {
-			tileDiv.className += ' field__tile_down';
+			tileDiv.className += ' field__tile-left';
 			leftColDivs.push(tileDiv);
 		}
 

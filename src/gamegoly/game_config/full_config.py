@@ -115,9 +115,11 @@ class GameConfig:
     def get_tiles(self) -> List[api_handlers.TileInfoApi]:
         tiles = []
         for tile in self.tiles:
+            color_str = f"rgb({tile.color[0]},{tile.color[1]},{tile.color[2]})"
             tiles.append(api_handlers.TileInfoApi(
                 title = tile.title,
-                description = tile.description
+                description = tile.description,
+                color = color_str,
             ))
         return tiles
 

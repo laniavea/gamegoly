@@ -197,7 +197,7 @@ pos = 5
 title = "FPS or shooter"
 description = "Ролл производится по одному из двух тегов: FPS или Shooter"
 rules = ["(Теги)FPS, shooter"]
-color = "193, 122, 160"
+color = "105, 168, 79"
 condition_id = 6
 
 [[tiles]]
@@ -205,7 +205,7 @@ pos = 6
 title = "Случайная игра"
 description = "Ролится случайны рейтинг по распределению (диапазон рейтинга игры - шанс): 100-80% - 60%, 79-70% - 20%, 69-50 - 10%, 49-.. - 10%. Если игр больше чем 1000, то равномерно ролится одно значение из выпавшего диапазона. По итоговому рейтингу роллится игра"
 rules = ["(Рейтинг)Полученный рейтинг"]
-color = "193, 122, 160"
+color = "230, 183, 174"
 condition_id = 6
 
 [[tiles]]
@@ -213,7 +213,7 @@ pos = 7
 title = "FPS or shooter"
 description = "Ролл производится по одному из двух тегов: FPS или Shooter"
 rules = ["(Теги)FPS, shooter"]
-color = "193, 122, 160"
+color = "105, 168, 79"
 condition_id = 6
 
 [[tiles]]
@@ -237,7 +237,7 @@ pos = 10
 title = "Спешл"
 description = "Ролл производится или по правилам тюрьма, или по правилам ТОП-100 (в зависимости от того, как игрок попал на клетку)"
 rules = ["(Конкретные игры)Любая на выбор игрока"]
-color = "193, 122, 160"
+color = "179, 94, 5"
 condition_id = 6
 
 [[tiles]]
@@ -245,7 +245,7 @@ pos = 11
 title = "Тюрьма / ТОП-100"
 description = "Производится ролл модификатора, далее, если игрок остается на клетке, то он выбирает самостоятельно каким-либо образом игру и проходит ее. Модификатор применяется к следующему ходу"
 rules = ["(Тюрьма)См. правила", "(Конкретные игры)TOP-100 по steamdb рейтингу"]
-color = "193, 122, 160"
+color = "203, 65, 36"
 condition_id = 6
 
 [[tiles]]
@@ -269,7 +269,7 @@ pos = 14
 title = "Horror"
 description = "Ролл производится по одному из следующих тегов: Horror, Psychological Horror или Survival Horror"
 rules = ["(Теги)Horror, Psychological Horror, Survival Horror"]
-color = "181,214,168"
+color = "190,143,0"
 condition_id = 5
 
 [[tiles]]
@@ -277,7 +277,7 @@ pos = 15
 title = "Jumper"
 description = "Ролл производится по одному из следующих тегов: Platformer, 3d Platformer или 2d Platformer"
 rules = ["(Теги)Platformer, 3d Platformer, 2d Platformer"]
-color = "181,214,168"
+color = "126,95,0"
 condition_id = 5
 
 [[tiles]]
@@ -285,7 +285,7 @@ pos = 16
 title = "Случайная игра"
 description = "Ролится случайны рейтинг по распределению (диапазон рейтинга игры - шанс): 100-80% - 60%, 79-70% - 20%, 69-50 - 10%, 49-.. - 10%. Если игр больше чем 1000, то равномерно ролится одно значение из выпавшего диапазона. По итоговому рейтингу роллится игра"
 rules = ["(Рейтинг)Полученный рейтинг"]
-color = "193, 122, 160"
+color = "230, 183, 174"
 condition_id = 6
 
 [[tiles]]
@@ -293,7 +293,7 @@ pos = 17
 title = "Horror"
 description = "Ролл производится по одному из следующих тегов: Horror, Psychological Horror или Survival Horror"
 rules = ["(Теги)Horror, Psychological Horror, Survival Horror"]
-color = "181,214,168"
+color = "190,143,0"
 condition_id = 5
 
 [[tiles]]
@@ -301,7 +301,7 @@ pos = 18
 title = "Jumper"
 description = "Ролл производится по одному из следующих тегов: Platformer, 3d Platformer или 2d Platformer"
 rules = ["(Теги)Platformer, 3d Platformer, 2d Platformer"]
-color = "181,214,168"
+color = "126,95,0"
 condition_id = 5
 
 [[tiles]]
@@ -309,7 +309,7 @@ pos = 19
 title = "Спешл"
 description = "Ролл производится или по правилам тюрьма, или по правилам ТОП-100 (в зависимости от того, как игрок попал на клетку)"
 rules = ["(Конкретные игры)Любая на выбор игрока"]
-color = "193, 122, 160"
+color = "179, 94, 5"
 condition_id = 6
 
 [[tiles]]
@@ -333,7 +333,7 @@ pos = 22
 title = "Puzzle"
 description = "Ролл производится по тегу Puzzle"
 rules = ["(Теги)Puzzle"]
-color = "193, 122, 160"
+color = "56, 117, 28"
 condition_id = 6
 
 [[tiles]]
@@ -349,7 +349,7 @@ pos = 24
 title = "Roguelike"
 description = "Ролл производится по одному из следующих тегов: Rogue-like или roguelite"
 rules = ["(Теги)Rogue-like, roguelite"]
-color = "193, 122, 160"
+color = "16, 85, 203"
 condition_id = 6
 
 [[tiles]]
@@ -357,7 +357,7 @@ pos = 25
 title = "Anime"
 description = "Ролл производится по тегу Anime"
 rules = ["(Теги)Anime"]
-color = "193, 122, 160"
+color = "255, 216, 101"
 condition_id = 6
 
 [[tiles]]
@@ -365,7 +365,7 @@ pos = 26
 title = "Случайная игра"
 description = "Ролится случайны рейтинг по распределению (диапазон рейтинга игры - шанс): 100-80% - 60%, 79-70% - 20%, 69-50 - 10%, 49-.. - 10%. Если игр больше чем 1000, то равномерно ролится одно значение из выпавшего диапазона. По итоговому рейтингу роллится игра"
 rules = ["(Рейтинг)Полученный рейтинг"]
-color = "193, 122, 160"
+color = "230, 183, 174"
 condition_id = 6
 
 [[tiles]]
@@ -373,7 +373,7 @@ pos = 27
 title = "Спешл"
 description = "Ролл производится или по правилам тюрьма, или по правилам ТОП-100 (в зависимости от того, как игрок попал на клетку)"
 rules = ["(Конкретные игры)Любая на выбор игрока"]
-color = "193, 122, 160"
+color = "179, 94, 5"
 condition_id = 6
 
 [[tiles]]
@@ -381,7 +381,7 @@ pos = 28
 title = "Roguelike"
 description = "Ролл производится по одному из следующих тегов: Rogue-like или roguelite"
 rules = ["(Теги)Rogue-like, roguelite"]
-color = "193, 122, 160"
+color = "16, 85, 203"
 condition_id = 6
 
 [[tiles]]
@@ -389,7 +389,7 @@ pos = 29
 title = "Puzzle"
 description = "Ролл производится по тегу Puzzle"
 rules = ["(Теги)Puzzle"]
-color = "193, 122, 160"
+color = "56, 117, 28"
 condition_id = 6
 
 [[tiles]]
@@ -397,7 +397,7 @@ pos = 30
 title = "Anime"
 description = "Ролл производится по тегу Anime"
 rules = ["(Теги)Anime"]
-color = "193, 122, 160"
+color = "255, 216, 101"
 condition_id = 6
 
 [[tiles]]
@@ -413,7 +413,7 @@ pos = 32
 title = "AAA"
 description = "Игра ролится по цене выше 39$"
 rules = ["(Цена)>39$"]
-color = "193, 122, 160"
+color = "141, 123, 194"
 condition_id = 6
 
 [[tiles]]
@@ -429,7 +429,7 @@ pos = 34
 title = "RPG"
 description = "Игра роллится по одному из следующих тегов: RPG, Action RPG, JRPG или Tactical RPG"
 rules = ["(Теги)RPG, Action RPG, JRPG, Tactical RPG"]
-color = "193, 122, 160"
+color = "152, 0, 0"
 condition_id = 6
 
 [[tiles]]
@@ -437,7 +437,7 @@ pos = 35
 title = "AAA"
 description = "Игра ролится по цене выше 39$"
 rules = ["(Цена)>39$"]
-color = "193, 122, 160"
+color = "141, 123, 194"
 condition_id = 6
 
 [[tiles]]
@@ -445,7 +445,7 @@ pos = 36
 title = "Случайная игра"
 description = "Ролится случайны рейтинг по распределению (диапазон рейтинга игры - шанс): 100-80% - 60%, 79-70% - 20%, 69-50 - 10%, 49-.. - 10%. Если игр больше чем 1000, то равномерно ролится одно значение из выпавшего диапазона. По итоговому рейтингу роллится игра"
 rules = ["(Рейтинг)Полученный рейтинг"]
-color = "193, 122, 160"
+color = "230, 183, 174"
 condition_id = 6
 
 [[tiles]]
@@ -453,7 +453,7 @@ pos = 37
 title = "Stratege"
 description = "Игра роллится по одному из тегов: Strategy, Turn-Based Strategy или Strategy RPG"
 rules = ["(Теги)Strategy, Turn-Based Strategy, Strategy RPG"]
-color = "193, 122, 160"
+color = "128, 128, 128"
 condition_id = 6
 
 [[tiles]]
@@ -461,7 +461,7 @@ pos = 38
 title = "RPG"
 description = "Игра роллится по одному из следующих тегов: RPG, Action RPG, JRPG или Tactical RPG"
 rules = ["(Теги)RPG, Action RPG, JRPG, Tactical RPG"]
-color = "193, 122, 160"
+color = "152, 0, 0"
 condition_id = 6
 
 [[tiles]]
@@ -477,5 +477,5 @@ pos = 40
 title = "Tactical"
 description = "Игра роллится по одному из тегов: Tactical, Turn-Based Tactics или Tactical RPG"
 rules = ["(Теги)Tactical, Turn-Based Tactics, Tactical RPG"]
-color = "193, 122, 160"
+color = "128, 128, 128"
 condition_id = 6
