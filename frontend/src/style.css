@@ -8,10 +8,6 @@
 	--outer-tile-border-size-with-inner: calc(var(--outer-tile-border-size) - var(--inner-tile-border-size-full));
 }
 
-h1 {
-	color: red;
-}
-
 .field {
 	display: flex;
 	flex-direction: column;
@@ -91,6 +87,36 @@ h1 {
 	border: var(--outer-tile-border-color) solid var(--outer-tile-border-size-with-inner);
 	box-sizing: border-box;
 	background: white;
+	display: flex;
+	flex-direction: row;
+}
+
+#field-center-zone-help {
+	background: green;
+	width: 25%;
+}
+
+#field-center-zone-main {
+	width: 50%;
+	display: flex;
+	flex-direction: column;
+}
+
+#main-zone-title {
+	height: 50%;
+	background: gray;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#main-zone-play-info {
+	height: 50%;
+}
+
+#field-center-zone-menu {
+	background: green;
+	width: 25%;
 }
 
 

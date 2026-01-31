@@ -5,7 +5,11 @@ interface TilesInfo {
 }
 
 interface Tiles {
-	tiles: TilesInfo[];
+	tiles: TilesInfo[],
+}
+
+interface Title {
+	title: string,
 }
 
 async function fetchTiles(): Promise<Tiles> {
@@ -99,11 +103,22 @@ function reorderTiles(generatedTiles: HTMLDivElement[]) {
 	generatedTiles.reverse()
 }
 
+async function createTitle() {
+	const response = await fetch('api/get_title');
+	if (!response.ok) {
+		throw new Error(`While fetching createTitle! Error code: ${response.status}`);
+	}
+	const title: Title = await response.json();
+	const titleHeader = document.getElementById("main-zone-title-header") as HTMLHeadElement;
+	titleHeader.textContent = title.title;
+}
+
 export async function createField() {
 	try {
 		const tiles: Tiles = await fetchTiles();
 		validateTiles(tiles);
 		createTiles(tiles);
+		await createTitle();
 
 	} catch (err) {
 		console.error("Error in creating field: ", err);

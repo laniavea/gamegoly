@@ -1,16 +1,18 @@
-from typing import List, Tuple, Optional, Dict
+from typing import List, Optional, Dict
+import logging
 
 from pydantic import ValidationError
 
 from . import raw_config
+from . import validation
 from .. import api_handlers
 from .. import entity
 
 class GameConfig:
     title: str = ""
     base_dice: List[entity.Dice]
-    help_info: List[Tuple[str, str]] = []
-    lists: Dict[str, List[str]]
+    help_info: List[entity.HelpInfo] = []
+    lists: Dict[str, entity.ListInfo]
     conditions: Dict[int, entity.ConditionInfo]
     events: List[entity.EventInfo]
     tiles: List[entity.TileInfo]
@@ -31,7 +33,7 @@ class GameConfig:
         self.tiles = GameConfig.init_tiles(raw_config_obj.tiles)
 
     @staticmethod
-    def create_help_info(raw_help_info: List[str]) -> List[Tuple[str, str]]:
+    def create_help_info(raw_help_info: List[str]) -> List[entity.HelpInfo]:
         help_info = []
 
         for help_str in raw_help_info:
@@ -69,19 +71,25 @@ class GameConfig:
             if not rule_info:
                 raise ValueError("Config's rule info is empty")
 
-            help_info.append((rule_name, rule_info))
+            help_info.append(entity.HelpInfo(name=rule_name, description=rule_info))
         return help_info
     
     @staticmethod
-    def init_lists(raw_lists: List[raw_config.RawListInfo]) -> Dict[str, List[str]]:
-        roll_lists: Dict[str, List[str]] = {}
+    def init_lists(raw_lists: List[raw_config.RawListInfo]) -> Dict[str, entity.ListInfo]:
+        roll_lists: Dict[str, entity.ListInfo] = {}
         for raw_list in raw_lists:
             list_name = raw_list.name
 
-            if not raw_list.elements:
-                raise ValueError(f"List '{list_name}' is empty")
+            if list_name in roll_lists:
+                logging.error(f"List with this name already exists: {list_name}")
+                raise ValueError("Incorrect list name")
 
-            roll_lists[list_name] = raw_list.elements
+            if len(list_name) == 0:
+                logging.error(f"One of the lists have empty name")
+                raise ValueError("Incorrect list name")
+
+            list_info = entity.ListInfo(list_name=list_name, rollable_objects=raw_list.elements)
+            roll_lists[list_name] = list_info
         return roll_lists
 
     @staticmethod
@@ -135,6 +143,7 @@ def create_config(file_path) -> GameConfig:
         raise e
 
     gc = GameConfig(raw_config_obj)
+    validation.validate_config(gc)
 
     print(gc.__dict__)
     print(gc.base_dice[0].__dict__)

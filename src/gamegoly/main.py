@@ -29,9 +29,9 @@ def create_app(config_path: Optional[str] = None) -> FastAPI:
         allow_headers=["*"],
     )
 
-    @app.get("/api/title")
-    async def title():
-        return {"message": app.state.config.title}
+    @app.get("/api/get_title")
+    async def get_title():
+        return {"title": app.state.config.title}
 
     @app.get("/api/get_tiles")
     async def get_tiles():
